@@ -28,7 +28,7 @@ yourCOMFileName.com 16 7 04 0 1234_6789 Hello,world!
     - `101` (bits 4–6): Magenta background (5 in decimal).  
     - `1` (bit 3): Bright (intense) text color.  
     - `010` (bits 0–2): Green text (2 in decimal).  
-    In decimal, this is `218`. For example, instead of `04`, you can use `218` to get blinking bright green text on a magenta background.
+    In decimal, this is `218` or `DA` in hex. For example, instead of `04`, you can use `218` to get blinking bright green text on a magenta background.
 - Fourth parametr - type of border (1, 2 or 0 - user own) <br>
 >[!NOTE]
 > Next parameters needed if at forth 0
