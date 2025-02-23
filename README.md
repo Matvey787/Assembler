@@ -13,13 +13,22 @@ don't have to constantly monitor the register values.
 ![This programm](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM)
 only uses registers. This makes it faster, smaller, but you have to constantly monitor the register values.
 ### Run program
-- Run DOSBox
-- Create *.com file (ASM -> OBJ -> COM)
-- Run by this command for example:
+1. Run DOSBox
+2. Create *.com file (ASM -> OBJ -> COM)
+3. Run by this command for example:
 ```
 yourCOMFileName.com 16 7 04 0 1234_6789 Hello,world!
 ```
-You will see it:
+- First parametr - width <br>
+- Second parametr - height <br>
+- Third parametr - color of border <br>
+- Fourth parametr - type of border (1, 2 or 0 - user own) <br>
+>[!NOTE]
+> Next parameters needed if at forth 0
+- Fifth parametr - border edges</br>
+- Sixth parametr - text in border<br>
+
+4. You will see it:
 ![DOSBox console](https://github.com/Matvey787/Assembler/blob/main/imgs/image.png)
 
 > [!IMPORTANT]
