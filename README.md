@@ -21,7 +21,7 @@ yourCOMFileName.com 16 7 04 0 1234_6789 Hello,world!
 ```
 - First parametr - width <br>
 - Second parametr - height <br>
-- Third parametr - color of border
+- Third parametr - color of border <br>
     **Example of color: 1|101|1|010** <br>
     This is an 8-bit color attribute value: <br>
     - `1` (bit 7): Text blinking is enabled.  
