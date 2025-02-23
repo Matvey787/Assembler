@@ -22,8 +22,8 @@ yourCOMFileName.com 16 7 04 0 1234_6789 Hello,world!
 - First parametr - width <br>
 - Second parametr - height <br>
 - Third parametr - color of border
-    **Example of color: 1|101|1|010**
-    This is an 8-bit color attribute value:  
+    **Example of color: 1|101|1|010** <br>
+    This is an 8-bit color attribute value: <br>
     - `1` (bit 7): Text blinking is enabled.  
     - `101` (bits 4–6): Magenta background (5 in decimal).  
     - `1` (bit 3): Bright (intense) text color.  
