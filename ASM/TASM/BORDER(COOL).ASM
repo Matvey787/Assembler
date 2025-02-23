@@ -34,10 +34,10 @@ DRAWCH macro
     push ax                      ; Save AX
     mov cx, 0B800h               ; Video memory segment
     mov es, cx                   ; Set ES
-    shl bx, 1                    ; Multiply position by 2
+    ;shl bx, 1                    ; Multiply position by 2
     mov al, [di]                 ; Load character from DI into AL
-    mov es:[bx], ax              ; Write character and color to video memory
-    shr bx, 1                    ; Restore position
+    mov es:[bx * 2], ax              ; Write character and color to video memory
+    ;shr bx, 1                    ; Restore position
     pop ax                       ; Restore AX
     pop cx                       ; Restore CX
 endm
@@ -184,7 +184,7 @@ NotType2:
     jne continue_processing     ; if not 0, process custom string
     cmp al, 0Dh                 ; check if it’s newline (\n)
     je type_zero_error          ; if yes, error (no phrase provided)
-    dec si                      ; move SI back if not newline
+    ;dec si                      ; move SI back if not newline
 continue_processing:
     xor al, al
     mov di, si                  ; now DI points to the start of first str in cmd line
@@ -345,7 +345,10 @@ print_line_loop:
     inc di                       ; Move to last character
     DRAWCH                       ; Draw last character (было call DrawCh)
     inc bl                       ; Increment offset
-    sub bl, dl                   ; Restore offset
+    push dx
+    xor dh, dh
+    sub bx, dx                   ; Restore offset
+    pop dx
     pop cx di                    ; Restore CX
     ret
 PrintLine endp
