@@ -5,11 +5,11 @@
 ## DRAWING BORDER
 ### Versions
 Program for printing border with a text in the center in it in DOS video mem. 
-- BORDER (SAMURAI VERSION)
+- BORDER (SAMURAI VERSION) \\
 ![This programm](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(SAMURAI%20VERSION).ASM)
  in most uses operative memory acess. This makes it slower, larger, but at least you 
 don't have to constantly monitor the register values.
-- BORDER (FAST VERSION)
+- BORDER (FAST VERSION) \\
 ![This programm](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM)
 only uses registers. This makes it faster, smaller, but you have to constantly monitor the register values.
 ### Run program
