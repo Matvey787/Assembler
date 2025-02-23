@@ -41,4 +41,9 @@ yourCOMFileName.com 16 7 04 0 1234_6789 Hello,world!
 > [!IMPORTANT]
 > [Second version](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM) more
 stable and can catch incorrect input.
-## 
+
+# NASM
+## Repeat
+[Programm](https://github.com/Matvey787/Assembler/blob/main/ASM/NASM/repeat.ASM) easily repeats the symbol and text which you passed.
+## Shift loop
+[Programm](https://github.com/Matvey787/Assembler/blob/main/ASM/NASM/shiftLoop.ASM) performs a cyclic shift of 1 in an array of three digits `123` -> `231`.
