@@ -30,24 +30,26 @@ errNoArgs   db 'Error: No arguments provided (Example: *.com 15 7 A9 1)',    0Dh
 ;| Destr: BX                            |
 ;|--------------------------------------|
 DRAWCH macro
-    push cx                      ; Save CX
+    push cx                      ; Save CX // FIXME only, add di inc 
     push ax                      ; Save AX
+    push bx
     mov cx, 0B800h               ; Video memory segment
     mov es, cx                   ; Set ES
-    ;shl bx, 1                    ; Multiply position by 2
+    shl bx, 1                    ; Multiply position by 2
     mov al, [di]                 ; Load character from DI into AL
-    mov es:[bx * 2], ax              ; Write character and color to video memory
+    mov es:[bx], ax              ; Write character and color to video memory
     ;shr bx, 1                    ; Restore position
+    pop bx
     pop ax                       ; Restore AX
     pop cx                       ; Restore CX
 endm
 
 SET_TYPE macro index
     lea di, boxBorderSymbols&index  ; Load address of border symbols
-    lea si, phrase&index            ; Load address of phrase
+                                                                                                                                                                 lea si, phrase&index            ; Load address of phrase
     mov cl, len&index               ; Load length of phrase
     xor ch, ch                      ; Clear CH (type info not needed)
-    ret                             ; Return from procedure
+    ret                             ; Return from procedure // FIXME ret to real place
 endm
 
 .code
@@ -136,13 +138,13 @@ wrPhrase proc
     sub ax, cx                   ; AX = DL - CL (border width - len of phrase)
     shr ax, 1                    ; AX = (DL - CL) / 2
     add bx, ax                   ; BX = (DH / 2) * 80 + (DL - CL) / 2
-    pop ax
+    pop ax                      
     call Centering               ; add offset related to the offset of border
 wrPhrase_loop:
     DRAWCH                       ; Print word to the screen (было call DrawCh)
     inc di                       ; go to next symbol
     inc bx                       ; add offset for position in video memory
-    loop wrPhrase_loop           ; In CX saved len of phrase (while > 0 -> continue)
+    loop wrPhrase_loop           ; In CX saved len of phrase (while > 0 -> continue) // FIXME stosv
 
     ret
 wrPhrase endp
@@ -209,6 +211,8 @@ type_zero_error:
     mov ax, 4C01h               ; Exit with error code 1
     int 21h
 no_args_error:
+
+
     mov ah, 09h                 ; DOS function to print string
     mov dx, offset errNoArgs    ; Load address of error message
     int 21h                     ; Print error message
@@ -344,11 +348,8 @@ print_line_loop:
     loop print_line_loop         ; Repeat loop
     inc di                       ; Move to last character
     DRAWCH                       ; Draw last character (было call DrawCh)
-    inc bl                       ; Increment offset
-    push dx
-    xor dh, dh
-    sub bx, dx                   ; Restore offset
-    pop dx
+    inc bx                       ; Increment offset
+    sub bl, dl                   ; Restore offset
     pop cx di                    ; Restore CX
     ret
 PrintLine endp
