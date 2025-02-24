@@ -47,3 +47,14 @@ stable and can catch incorrect input.
 [Programm](https://github.com/Matvey787/Assembler/blob/main/ASM/NASM/repeat.ASM) easily repeats the symbol and text which you passed.
 ## Shift loop
 [Programm](https://github.com/Matvey787/Assembler/blob/main/ASM/NASM/shiftLoop.ASM) performs a cyclic shift of 1 in an array of three digits `123` -> `231`.
+You can run programs in NASM by such commands:
+- Compilation 32-bit programm
+```
+nasm -f elf32 yourProgramm.ASM -o yourProgramm.o
+ld -m elf_i386 -s -o yourProgramm yourProgramm.o
+```
+- Compilation 64-bit programm
+```
+nasm -f elf64 yourProgramm.ASM -o yourProgramm.o
+ld -m -s -o yourProgramm yourProgramm.o
+```
