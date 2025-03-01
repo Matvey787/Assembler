@@ -10,7 +10,7 @@ Program for printing border with a text in the center in it in DOS video mem.
  in most uses operative memory acess. This makes it slower, larger, but at least you 
 don't have to constantly monitor the register values.
 - <b>BORDER (FAST VERSION)</b> <br>
-![This programm](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM)
+[This programm](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM)
 only uses registers. This makes it faster, smaller, but you have to constantly monitor the register values.
 ### Run program
 1. Run DOSBox
@@ -36,11 +36,50 @@ yourCOMFileName.com 16 7 04 0 1234_6789 Hello,world!
 - Sixth parametr - text in border<br>
 
 4. You will see it:
-![DOSBox console](https://github.com/Matvey787/Assembler/blob/main/imgs/image.png)
+[DOSBox console](https://github.com/Matvey787/Assembler/blob/main/imgs/image.png)
 
 > [!IMPORTANT]
 > [Second version](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM) more
 stable and can catch incorrect input.
+
+# CRACKalca
+## Description
+This program is the easiest example of "cracking" programm. It is going throw the code and
+change it to work even if user didn't guess the password. The programm simply replaces the
+transition adresses of commands such as 'JNE' (or 'JNZ') in the COM file. <br> The example of 
+[source file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.COM) which
+needs to be hacked. <br>
+First of all I need to understand how the com file works. So I do disassembly of it:
+>[!NOTE]
+> Download nasm to Linux first of all.
+```
+ndisasm -b 16 -o 100h com/file/path.COM > asm/file/path.asm
+```
+- 100h mean offset of the code in the com file.
+- -b 16 mean 16-bit code (optionally it could be 32 or 64-bit code)
+
+>[!WARNING]
+> This program is not intended for use in any other way except for educational purposes.
+> Everything that is here is purely for entertainment purposes.
+
+## Compilation
+To compile this project you need to install SFML-library.
+```
+    sudo apt-get install libsfml-dev
+```
+
+And you need to install SDL2 and SDL2_mixer libraries:
+```
+    sudo apt-get install libsdl2-dev
+    sudo apt-get install libsdl2-mixer-dev
+```
+
+After installing SFML-library, SDL2, SDL2_mixer you can compile this project with and run it:
+```
+    g++ CRACKalka.cpp -o out -lsfml-graphics -lsfml-window -lsfml-system -lSDL2 -lSDL2_mixer
+    ./out
+```
+
 
 # NASM
 ## Repeat

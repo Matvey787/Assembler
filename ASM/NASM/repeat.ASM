@@ -59,7 +59,7 @@ _start:
     ; print input string
     mov eax, 4          
     mov ebx, 1          
-    mov ecx, input_buffer 
+    mov ecx, input_buffer
     movzx edx, byte [input_len] ; from op mem to reg
     int 0x80
 

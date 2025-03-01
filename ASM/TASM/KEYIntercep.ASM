@@ -27,7 +27,7 @@ Start:
     mov old09Seg, ax            ; Save the segment to the variable old09Seg
 
     ; Install the new interrupt handler for interrupt 09h
-    cli                         ; Disable interrupts to prevent race conditions
+    cli                         ; Disable interrupts to prevent race conditions // FIXME cli move higer 
     mov es:[bx], offset New09   ; Set the offset of the new handler in the vector table
     push cs                     ; Push the code segment (CS) onto the stack
     pop ax                      ; Pop the code segment into AX
