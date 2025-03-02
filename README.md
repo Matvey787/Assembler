@@ -36,7 +36,7 @@ yourCOMFileName.com 16 7 04 0 1234_6789 Hello,world!
 - Sixth parametr - text in border<br>
 
 4. You will see it:
-[DOSBox console](https://github.com/Matvey787/Assembler/blob/main/imgs/image.png)
+![DOSBox console](https://github.com/Matvey787/Assembler/blob/main/imgs/image.png)
 
 > [!IMPORTANT]
 > [Second version](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM) more
@@ -59,7 +59,9 @@ ndisasm -b 16 -o 100h com/file/path.COM > asm/file/path.asm
 - -b 16 mean 16-bit code (optionally it could be 32 or 64-bit code)
 After it you can find [*.asm file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.asm) with disassembled code. Now you can probe it and find it's vulnerabilities. After the first 
 viewing I found interesting strings: <br>
+
 ![asmStrings](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs.png)
+
 This is what we need, this is where the comparison of two lines occures, the addresses 
 of which are tempurary stored in `si` and `di` registers. And if at least one symbol
 of them not match the programm will go to label which had written after `jnz` (or `jne`).
