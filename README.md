@@ -1,3 +1,17 @@
+# Table of Contents
+- [DOSBox](#dosbox)
+- [TASM](#tasm)
+  - [DRAWING BORDER](#drawing-border)
+    - [Versions](#versions)
+    - [Run program](#run-program)
+- [CRACKalca](#crackalca)
+  - [Description](#description)
+  - [Compilation](#compilation)
+  - [My own programm for cracking](#my-own-programm-for-cracking)
+- [NASM](#nasm)
+  - [Repeat](#repeat)
+  - [Shift loop](#shift-loop)
+
 # DOSBox
 ![Download DOSBox (windows)](https://github.com/Matvey787/Assembler/blob/main/DOSBox.exe)
 
@@ -126,7 +140,7 @@ So the answer is to enter firstly enter `1234567890t)`.
 - `t)` is `74 29` for *.com file. `74` - `je`, `29` - offset to `0x22a`. You can find it as a hint
 in data-segment:
 
-![comHint](https://github.com/Matvey787/Assembler/blob/main/imgs/comHint.png)
+![comHint](https://github.com/Matvey787/Assembler/blob/main/imgs/cormHint.png)
 
 After this jump we got to function `0x22a`, then ret goes to `1f7`. So it calls `0x1fa`, comparison our and our password.
 
