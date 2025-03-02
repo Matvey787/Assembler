@@ -57,7 +57,8 @@ ndisasm -b 16 -o 100h com/file/path.COM > asm/file/path.asm
 ```
 - 100h mean offset of the code in the com file.
 - -b 16 mean 16-bit code (optionally it could be 32 or 64-bit code)
-
+After it you can find [*.asm file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.asm) with disassembled code. Now you can probe it and find it's 
+vulnerabilities. 
 >[!WARNING]
 > This program is not intended for use in any other way except for educational purposes.
 > Everything that is here is purely for entertainment purposes.
@@ -77,7 +78,12 @@ And you need to install SDL2 and SDL2_mixer libraries:
 After installing SFML-library, SDL2, SDL2_mixer you can compile this project with and run it:
 ```
     g++ CRACKalka.cpp -o out -lsfml-graphics -lsfml-window -lsfml-system -lSDL2 -lSDL2_mixer
-    ./out
+    ./out path/to/com/file.com
+```
+Or you can use `make` to build this project:
+```
+    make
+    ./out path/to/com/file.com
 ```
 
 

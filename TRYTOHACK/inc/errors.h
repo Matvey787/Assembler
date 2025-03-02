@@ -10,6 +10,7 @@ enum errors
     SYSTEM_ERR         = 4,
     FILE_COM_NOT_FOUND = 5,
     EMPTY_FILE         = 6,
+    WRONG_NUM_OF_ARGS  = 7,
 };
 
 #endif // ERRORS_H
