@@ -57,8 +57,15 @@ ndisasm -b 16 -o 100h com/file/path.COM > asm/file/path.asm
 ```
 - 100h mean offset of the code in the com file.
 - -b 16 mean 16-bit code (optionally it could be 32 or 64-bit code)
-After it you can find [*.asm file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.asm) with disassembled code. Now you can probe it and find it's 
-vulnerabilities. 
+After it you can find [*.asm file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.asm) with disassembled code. Now you can probe it and find it's vulnerabilities. After the first 
+viewing I found interesting strings:
+![asmStrings](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs.png)
+This is what we need, this is where the comparison of two lines occures, the addresses 
+of which are tempurary stored in `si` and `di` registers. And if at least one symbol
+of them not match the programm will go to label which had written after `jnz` (or `jne`).
+We see a successful transition right after `cmp al, 0x0`, because if all symbols were the same
+we go to the and it's 00h. So `jnz 0x173` -> `jnz 0x165`.
+
 >[!WARNING]
 > This program is not intended for use in any other way except for educational purposes.
 > Everything that is here is purely for entertainment purposes.
