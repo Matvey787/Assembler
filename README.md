@@ -67,7 +67,7 @@ This is what we need, this is where the comparison of two lines occures, the add
 of which are tempurary stored in `si` and `di` registers. And if at least one symbol
 of them not match the programm will go to label which had written after `jnz` (or `jne`).
 We see a successful transition right after `cmp al, 0x0`, because if all symbols were the same
-we go to the and it's 00h. So `jnz 0x173` -> `jnz 0x165`.
+we go to the and it's 00h. So we need to change `jnz 0x173` -> `jnz 0x165`.
 
 >[!WARNING]
 > This program is not intended for use in any other way except for educational purposes.
@@ -95,7 +95,40 @@ Or you can use `make` to build this project:
     make
     ./out path/to/com/file.com
 ```
+## My own programm for cracking
+I also create interesting programm for cracking. It's [here](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/MYPROGFORHACKING.COM). It's really hard to find vulnerabilities in it.
+After dissassembly of it you can see it:
 
+![asmStrings2](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs2.png)
+![asmStrings2](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs3.png)
+
+If you look at the code you can find some oddities. 2 segments of data are located directly in the code. The first such segment is just trash, I added it to confuse people who disassembles it. After
+it you can see you can see the calling of function `call 0x22a`. If go to this address you can see
+ it:
+
+![asmStrings2](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs4.png)
+
+This part of code print something `mov ah, 0x9` (DOS func for print) and get something `mov ah,0xa`.
+So more likely this function is for input password from user. <b>It is clear that the password address is pushed into the stack.</b><br>
+
+If you look closely, you can find a function at the address `0x1fa` <b>that compares `di` and `si`, and they get there from the stack, into which both the reference password and the entered password are pushed.</b>
+
+Before `0x22a` you can see `mov word [bp+0x2],0x1f1`. 
+
+![asmStrings5](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs5.png)
+
+This pushes the address of the command to call the comparison function. <br>
+So the answer is to enter firstly enter `1234567890t)`.
+- We erase useless `xor bx, bx`
+
+![asmStrings6](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs6.png)
+
+- `t)` is `74 29` for *.com file. `74` - `je`, `29` - offset to `0x22a`. You can find it as a hint
+in data-segment:
+
+![asmStrings6](https://github.com/Matvey787/Assembler/blob/main/imgs/comHint.png)
+
+After this jump we got to function `0x22a`, then ret gors to `1f7`. So it calls `0x1fa`, comparison our and our password.
 
 # NASM
 ## Repeat
