@@ -128,7 +128,7 @@ in data-segment:
 
 ![comHint](https://github.com/Matvey787/Assembler/blob/main/imgs/comHint.png)
 
-After this jump we got to function `0x22a`, then ret gors to `1f7`. So it calls `0x1fa`, comparison our and our password.
+After this jump we got to function `0x22a`, then ret goes to `1f7`. So it calls `0x1fa`, comparison our and our password.
 
 # NASM
 ## Repeat
