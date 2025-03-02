@@ -126,7 +126,7 @@ So the answer is to enter firstly enter `1234567890t)`.
 - `t)` is `74 29` for *.com file. `74` - `je`, `29` - offset to `0x22a`. You can find it as a hint
 in data-segment:
 
-![asmStrings6](https://github.com/Matvey787/Assembler/blob/main/imgs/comHint.png)
+![comHint](https://github.com/Matvey787/Assembler/blob/main/imgs/comHint.png)
 
 After this jump we got to function `0x22a`, then ret gors to `1f7`. So it calls `0x1fa`, comparison our and our password.
 
