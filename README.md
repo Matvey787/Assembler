@@ -56,7 +56,8 @@ First of all I need to understand how the com file works. So I do disassembly of
 ndisasm -b 16 -o 100h com/file/path.COM > asm/file/path.asm
 ```
 - 100h mean offset of the code in the com file.
-- -b 16 mean 16-bit code (optionally it could be 32 or 64-bit code) <br>
+- -b 16 mean 16-bit code (optionally it could be 32 or 64-bit code)
+
 After it you can find [*.asm file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.asm) with disassembled code. Now you can probe it and find it's vulnerabilities. After the first 
 viewing I found interesting strings: <br>
 
