@@ -32,7 +32,7 @@ errors procComFile(const char* comFileName)
     assert(comFileName != nullptr);
 
     errors err = NO_ERR;
-    FILE* file = fopen(comFileName, "r+");
+    FILE* file = fopen(comFileName, "rb+");
 
     if (file == nullptr) 
     {
@@ -67,7 +67,6 @@ void crackFile(unsigned char* buffer, size_t numOfChars)
     int stopCounter = 0;
     for (size_t i = 0; i < numOfChars; i++)
     {
-        //printf("%x\n", buffer[i]);
         if (isalpha(buffer[i]))
         {
             ++stopCounter;
@@ -81,7 +80,6 @@ void crackFile(unsigned char* buffer, size_t numOfChars)
 
         if (buffer[i] == JNE_ASCII_CODE)
         {//              ^------ ascii code of jne (75 in hex)
-            //printf("---------------- %x\n", buffer[i]);
             buffer[i + 1] = 4; // 4 - address of success
         }
     }
@@ -120,6 +118,3 @@ errors readFile(FILE* file, unsigned char* buffer, size_t* numOfChars)
     printf("\n-------------------- end --------------------\n");
     return NO_ERR;
 }
-
-
-

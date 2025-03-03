@@ -21,7 +21,7 @@ CXXFLAGS = -I inc -D _DEBUG -lncurses -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc
 OBJECTS = obj/CRACKalka.o obj/drawPicture.o obj/playMusic.o
 
 # Default target
-all: out
+all: init out
 
 # Link
 out: $(OBJECTS)
@@ -34,3 +34,6 @@ obj/%.o: src/%.cpp
 # Clean
 clean:
 	rm -rf out obj/*.o 
+
+init:
+	mkdir -p obj
