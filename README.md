@@ -146,7 +146,7 @@ in data-segment:
 After this jump we got to function `0x22a`, then ret goes to `1f7`. So it calls `0x1fa`, comparison our and our password.
 ### Second vulnerability
 Thanks to expert, white hacker [Egor](https://github.com/ZEVS1206), he founded another vulnerability in this programm. <br>
-You can easily enter this password <b>1234567890`</b>. Because of 11 symbols > 10 symbol, so <b>```</b> writes to *.com
+You can easily enter this password <b>1234567890[backtick]</b>. Because of 11 symbols > 10 symbol, so <b>[backtick]</b> writes to *.com
 file 60h. So it changes `xor bx, bx` to `pusha`. So programm pushes all registers, they are zero, and then
 function `1f7` pop two registers and compares them instead of comparing the reference password and the password entered by the user.
 It also works in every case. Cool!!!
