@@ -1,10 +1,10 @@
 .model tiny 
 .data
     askPasswordMSG db 'Enter the password: ', 0Ah, '$'
-    correctPassword db 'DED32'          ; Эталонный пароль
+    correctPassword db 'DED32'          ; Reference password
     winner db 'You have received admin rights!$'
     looser db 'Are you a real hacker? Looooooser... Ahahha!', 0Ah, 'Incorrect password!$'
-    lenOfcorrectPassword db 5           ; Длина эталонного пароля
+    lenOfcorrectPassword db 5           ; Length of the reference password
     hint db 'Hint: behind |000001F5 33DB xor bx,bx|  and  |00000220 50 push ax|  29 instructions$'
 .code
 org 100h 
@@ -12,11 +12,11 @@ org 100h
 Start:
     mov ax, cs
     mov ds, ax                      ; DS = CS
-    mov es, ax                      ; ES = CS (для cmpsb)
+    mov es, ax                      ; ES = CS (for cmpsb)
     jmp Empty2
-    trash db 200 dup(0)            ; Заливка памяти
+    trash db 200 dup(0)            ; Memory fill
 Empty2:
-    push offset correctPassword     ; Адрес эталонного пароля
+    push offset correctPassword     ; Address of the reference password
 
     call enterPassword
     cmp dx, ax
@@ -24,7 +24,7 @@ Empty2:
     mov cx, 21ah
     jmp Empty
 
-    password db 12, 0, 10 dup(0)    ; Буфер: макс. длина, факт. длина, место для строки
+    password db 12, 0, 10 dup(0)    ; Buffer: max length, actual length, space for the string
 
 Empty:
     xor bx, bx
@@ -36,17 +36,17 @@ Empty:
 
     
 checkPassword proc
-    pop bx                          ; Извлекаем адрес возврата (временный регистр)
-    pop di                          ; Адрес введённой строки (password + 2)
-    pop si                          ; Адрес эталонного пароля (correctPassword)
+    pop bx                          ; Retrieve return address (temporary register)
+    pop di                          ; Address of the entered string (password + 2)
+    pop si                          ; Address of the reference password (correctPassword)
 
-    mov cl, [lenOfcorrectPassword]  ; Длина эталонного пароля
-    xor ch, ch                      ; Обнуляем старший байт CX
+    mov cl, [lenOfcorrectPassword]  ; Length of the reference password
+    xor ch, ch                      ; Clear the high byte of CX
 
-    cld                             ; Направление вперёд
-    repe cmpsb                      ; Сравнение строк
-    je equal                        ; Если равны, переходим к equal
-    jmp notequal                    ; Если не равны, переходим к notequal
+    cld                             ; Direction forward
+    repe cmpsb                      ; Compare strings
+    je equal                        ; If equal, jump to equal
+    jmp notequal                    ; If not equal, jump to notequal
 
 equal:
     mov ah, 09h
@@ -68,19 +68,19 @@ enterPasswordL:
     push 1f7h
 enterPassword proc 
 
-    ; Вывод приглашения
+    ; Display prompt
     mov ah, 09h
     mov dx, offset askPasswordMSG
     int 21h
 
-    ; Получение пароля от пользователя
+    ; Get password from user
     mov ah, 0Ah
     mov dx, offset password
     int 21h
 
-    ; Передаём адреса через стек
+    ; Pass addresses through stack
     pop ax
-    push offset password + 2        ; Адрес введённой строки
+    push offset password + 2        ; Address of the entered string
     push ax
     xor dx, dx
     xor ax, ax
