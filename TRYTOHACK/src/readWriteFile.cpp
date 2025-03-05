@@ -5,7 +5,7 @@
 #include "errors.h"
 
 errors readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymbols,
-                                                               size_t* numOfStrs)
+                                                               size_t* numOfStrs, ErrorHandler* err)
 {
     assert(buffer       != nullptr);
     assert(file_name    != nullptr);
@@ -14,8 +14,10 @@ errors readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymb
     FILE* rFile = fopen(file_name, "rb");
 
     // if the file can't be opened, return an error
-    if (rFile == nullptr)
-        return FILE_COM_NOT_FOUND;
+    if (rFile == nullptr) {
+        err->setError(FILE_COM_NOT_FOUND, __FILE__, __LINE__);
+        return err->getErrorCode();
+    }
 
     // find size of file
     fseek(rFile, 0, SEEK_END);
@@ -26,15 +28,16 @@ errors readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymb
     *buffer = (unsigned char*)calloc(local_numOfSymbols, sizeof(char));
 
     // if the memory can't be allocated, return an error
-    if (*buffer == nullptr)
-        return ALLOCATE_MEM_FAIL;
+    if (*buffer == nullptr) {
+        err->setError(ALLOCATE_MEM_FAIL, __FILE__, __LINE__);
+        return err->getErrorCode();
+    }
 
     // read the file into the buffer
     fread(*buffer, sizeof(char), local_numOfSymbols, rFile);
 
     // add '\n' at the end of the buffer if it doesn't exist
-    if ((*buffer)[local_numOfSymbols - 1] != '\n')
-    {
+    if ((*buffer)[local_numOfSymbols - 1] != '\n') {
         *buffer = (unsigned char*)realloc(*buffer, sizeof(unsigned char) * 
                                                                         (local_numOfSymbols + 1));
         (*buffer)[local_numOfSymbols] = '\n';
@@ -44,7 +47,7 @@ errors readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymb
     // find number of strings
     if (numOfStrs != nullptr)
     {
-        for (size_t i = 0; i < *numOfSymbols; i++) if ((*buffer)[i] == '\n') ++(*numOfStrs);
+        for (size_t i = 0; i < local_numOfSymbols; i++) if ((*buffer)[i] == '\n') ++(*numOfStrs);
     }
         
 
@@ -53,7 +56,7 @@ errors readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymb
     
 
     fclose(rFile);
-    return NO_ERR;
+    return err->getErrorCode();
 }
 
 errors writeFile(const unsigned char* buffer, const char* file_name, size_t numOfSymbols)

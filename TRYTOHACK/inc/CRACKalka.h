@@ -14,8 +14,9 @@ struct buffer
 errors playMusic   (const char* mp3FileName);
 errors drawWindow  (Mix_Music* music);
 errors procComFile(const char* configFileName, const char* comFileName);
-void crackFile     (buffer* comBuff, buffer* confBuff);
+errors crackFile(buffer* comBuff, buffer* confBuff);
 errors readFile    (unsigned char** buffer, const char* file_name, size_t* numOfSymbols = nullptr, 
                                                                    size_t* numOfStrs    = nullptr);
 errors writeFile   (const unsigned char* buffer, const char* file_name, size_t numOfSymbols);
+
 #endif // CRACKALKA_H

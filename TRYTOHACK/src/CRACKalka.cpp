@@ -8,6 +8,7 @@
 // We go through the *.com file and replace byte after jne with 04 - address of success.
 int main(int argc, char const *argv[])
 {
+    ErrorHandler err2();
     errors err = NO_ERR;
     if (argc != 3)
     {
@@ -74,7 +75,7 @@ errors procComFile(const char* configFileName, const char* comFileName)
     return err;
 }
 
-void crackFile(buffer* comBuff, buffer* confBuff)
+errors crackFile(buffer* comBuff, buffer* confBuff)
 {
     assert(comBuff != nullptr);
     assert(confBuff != nullptr);
@@ -83,14 +84,10 @@ void crackFile(buffer* comBuff, buffer* confBuff)
     size_t codeSection = 0; // offset of code section in com file
     bool skipComm = false;
     bool codeSectionFound = false;
-    printf("here %lu\n", confBuff->size);
     for (size_t i = 0; i < confBuff->size; ++i)
     {
-        printf("Before skip %c\n", confBuff->data[i]);
-        // getchar();
         if (skipComm && confBuff->data[i] != '\n')
             continue;
-        printf("After skip: %c\n", confBuff->data[i]);
 
         if (confBuff->data[i] == '#')
             skipComm = true;
@@ -100,32 +97,32 @@ void crackFile(buffer* comBuff, buffer* confBuff)
         {
             if (!codeSectionFound)
             {
-                printf("char %c", confBuff->data[i]);
-                int readedChars = sscanf((const char*)(confBuff->data + i), "%xh", &codeSection);
-                printf("----------100--------- %xh\n", codeSection);
-                i += 4;
+                if (!sscanf((const char*)(confBuff->data + i), "%xh", &codeSection))
+                    return NO_START_OF_CODE_SECTION;
+                i += 4; // skeep 4 symbols of number
                 codeSectionFound = true;
                 continue;
             }
             size_t addressOfStart = 0;   // start address of bytes to change in com file
             size_t bytesToChange  = 0;   // number of bytes to change in com file
 
-            int readedChars = sscanf((const char*)(confBuff->data + i), "%lxh", &addressOfStart);
-            printf("------------------- %lxh\n", addressOfStart);
-            i += 4;
+            if (!sscanf((const char*)(confBuff->data + i), "%lxh", &addressOfStart))
+                return NO_ADDRES_OF_CHANGES;
+            i += 5; // skeep 4 symbols of number and ' '
 
-            readedChars = sscanf((const char*)(confBuff->data + i), "%lu", &bytesToChange);
-            i += 2;
-            printf("ttttt %c %c\n", *(confBuff->data + i), *(confBuff->data + i + 1));
+            if (!sscanf((const char*)(confBuff->data + i), "%lu", &bytesToChange))
+                return NO_BYTES_TO_CHANGE;
+            i += 2; // skeep digit and ' '
+
             size_t offset = addressOfStart - codeSection;
             printf("offset: %u %u\n", offset, bytesToChange);
             for (size_t j = 0; j < bytesToChange; ++j)
             {
-                unsigned char byte = 0;
+                size_t byte = 0;
+                if (!sscanf((const char*)(confBuff->data + i), "%x", &byte));
+                    return NO_NEW_BYTES;
 
-                sscanf((const char*)(confBuff->data + i), "%d", &byte);
-                printf("byte: %d\n", byte);
-                comBuff->data[offset + j] = byte;
+                comBuff->data[offset + j] = (unsigned char)byte;
 
                 i += 3; // skip readed byte and ' '
             }
