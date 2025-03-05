@@ -7,7 +7,7 @@
 - [CRACKalca](#crackalca)
   - [Description](#description)
   - [Compilation](#compilation)
-  - [My own programm for cracking](#my-own-programm-for-cracking)
+  - [My own program for cracking](#my-own-program-for-cracking)
 - [NASM](#nasm)
   - [Repeat](#repeat)
   - [Shift loop](#shift-loop)
@@ -18,24 +18,24 @@
 # TASM
 ## DRAWING BORDER
 ### Versions
-Program for printing border with a text in the center in it in DOS video mem. 
+Program for printing a border with text in the center in DOS video memory.
 - <b>BORDER (SAMURAI VERSION)</b> <br>
-![This programm](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(SAMURAI%20VERSION).ASM)
- in most uses operative memory acess. This makes it slower, larger, but at least you 
+[This program](ASM/TASM/BORDER(SAMURAI%20VERSION).ASM)
+mostly uses operative memory access. This makes it slower and larger, but at least you 
 don't have to constantly monitor the register values.
 - <b>BORDER (FAST VERSION)</b> <br>
-[This programm](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM)
-only uses registers. This makes it faster, smaller, but you have to constantly monitor the register values.
+[This program](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM)
+only uses registers. This makes it faster and smaller, but you have to constantly monitor the register values.
 ### Run program
 1. Run DOSBox
-2. Create *.com file (ASM -> OBJ -> COM)
-3. Run by this command for example:
+2. Create a *.com file (ASM -> OBJ -> COM)
+3. Run with this command, for example:
 ```
-yourCOMFileName.com 16 7 04 0 1234_6789 Hello,world!
+yourCOMFileName.com 16 7 04 0 1234_6789 Hello, world!
 ```
-- First parametr - width <br>
-- Second parametr - height <br>
-- Third parametr - color of border <br>
+- First parameter - width <br>
+- Second parameter - height <br>
+- Third parameter - color of the border <br>
     **Example of color: 1|101|1|010** <br>
     This is an 8-bit color attribute value: <br>
     - `1` (bit 7): Text blinking is enabled.  
@@ -43,63 +43,63 @@ yourCOMFileName.com 16 7 04 0 1234_6789 Hello,world!
     - `1` (bit 3): Bright (intense) text color.  
     - `010` (bits 0–2): Green text (2 in decimal).  
     In decimal, this is `218` or `DA` in hex. For example, instead of `04`, you can use `DA` to get blinking bright green text on a magenta background.
-- Fourth parametr - type of border (1, 2 or 0 - user own) <br>
+- Fourth parameter - type of border (1, 2, or 0 - user-defined) <br>
 >[!NOTE]
-> Next parameters needed if at forth 0
-- Fifth parametr - border edges</br>
-- Sixth parametr - text in border<br>
+> The next parameters are needed if the fourth parameter is 0
+- Fifth parameter - border edges</br>
+- Sixth parameter - text in the border<br>
 
-4. You will see it:
+4. You will see this:
 ![DOSBox console](https://github.com/Matvey787/Assembler/blob/main/imgs/image.png)
 
 > [!IMPORTANT]
-> [Second version](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM) more
-stable and can catch incorrect input.
+> The [second version](https://github.com/Matvey787/Assembler/blob/main/ASM/TASM/BORDER(COOL).ASM) is more
+stable and can handle incorrect input.
 
 # CRACKalca
 ## Description
-This program is the easiest example of "cracking" programm. It is going throw the code and
-change it to work even if user didn't guess the password. The programm simply replaces the
-transition adresses of commands such as 'JNE' (or 'JNZ') in the COM file. <br> The example of 
-[source file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.COM) which
+This program is the easiest example of a "cracking" program. It goes through the code and
+modifies it to work even if the user didn't guess the password. The program simply replaces the
+jump addresses of commands such as 'JNE' (or 'JNZ') in the COM file. <br> Here is an example of the 
+[source file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.COM) that
 needs to be hacked. <br>
-First of all I need to understand how the com file works. So I do disassembly of it:
+First of all, I need to understand how the COM file works. So I disassemble it:
 >[!NOTE]
-> Download nasm to Linux first of all.
+> Download NASM to Linux first.
 ```
 ndisasm -b 16 -o 100h com/file/path.COM > asm/file/path.asm
 ```
-- 100h mean offset of the code in the com file.
-- -b 16 mean 16-bit code (optionally it could be 32 or 64-bit code)
+- 100h means the offset of the code in the COM file.
+- -b 16 means 16-bit code (optionally it could be 32 or 64-bit code)
 
-After it you can find [*.asm file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.asm) with disassembled code. Now you can probe it and find it's vulnerabilities. After the first 
-viewing I found interesting strings: <br>
+After this, you can find the [*.asm file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.asm) with the disassembled code. Now you can analyze it and find its vulnerabilities. After the first 
+viewing, I found interesting strings: <br>
 
 ![asmStrings](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs.png)
 
-This is what we need, this is where the comparison of two lines occures, the addresses 
-of which are tempurary stored in `si` and `di` registers. And if at least one symbol
-of them not match the programm will go to label which had written after `jnz` (or `jne`).
-We see a successful transition right after `cmp al, 0x0`, because if all symbols were the same
-we go to the and it's 00h. So we need to change `jnz 0x173` -> `jnz 0x165`.
+This is what we need; this is where the comparison of two lines occurs, the addresses 
+of which are temporarily stored in the `si` and `di` registers. If at least one symbol
+does not match, the program will jump to the label written after `jnz` (or `jne`).
+We see a successful transition right after `cmp al, 0x0`, because if all symbols were the same,
+we go to the end, which is 00h. So we need to change `jnz 0x173` -> `jnz 0x165`.
 
 >[!WARNING]
-> This program is not intended for use in any other way except for educational purposes.
-> Everything that is here is purely for entertainment purposes.
+> This program is not intended for use in any way except for educational purposes.
+> Everything here is purely for entertainment purposes.
 
 ## Compilation
-To compile this project you need to install SFML-library.
+To compile this project, you need to install the SFML library.
 ```
     sudo apt-get install libsfml-dev
 ```
 
-And you need to install SDL2 and SDL2_mixer libraries:
+And you need to install the SDL2 and SDL2_mixer libraries:
 ```
     sudo apt-get install libsdl2-dev
     sudo apt-get install libsdl2-mixer-dev
 ```
 
-After installing SFML-library, SDL2, SDL2_mixer you can compile this project with and run it:
+After installing the SFML library, SDL2, and SDL2_mixer, you can compile this project and run it:
 ```
     g++ CRACKalka.cpp -o out -lsfml-graphics -lsfml-window -lsfml-system -lSDL2 -lSDL2_mixer
     ./out path/to/com/file.com
@@ -109,61 +109,61 @@ Or you can use `make` to build this project:
     make
     ./out path/to/com/file.com
 ```
-## My own programm for cracking
-I also create interesting programm for cracking. It's [here](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/MYPROGFORHACKING.COM). It's really hard to find vulnerabilities in it.
+## My own program for cracking
+I also created an interesting program for cracking. It's [here](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/MYPROGFORHACKING.COM). It's really hard to find vulnerabilities in it.
 ### First vulnerability
-After dissassembly of it you can see it:
+After disassembly, you can see this:
 
 ![asmStrings2](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs2.png)
 ![asmStrings2](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs3.png)
 
-If you look at the code you can find some oddities. 2 segments of data are located directly in the code. The first such segment is just trash, I added it to confuse people who disassembles it. After
-it you can see you can see the calling of function `call 0x22a`. If go to this address you can see
- it:
+If you look at the code, you can find some oddities. Two segments of data are located directly in the code. The first such segment is just trash; I added it to confuse people who disassemble it. After
+it, you can see the calling of the function `call 0x22a`. If you go to this address, you can see
+ this:
 
 ![asmStrings2](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs4.png)
 
-This part of code print something `mov ah, 0x9` (DOS func for print) and get something `mov ah,0xa`.
-So more likely this function is for input password from user. <b>It is clear that the password address is pushed into the stack.</b><br>
+This part of the code prints something `mov ah, 0x9` (DOS function for print) and gets something `mov ah,0xa`.
+So more likely this function is for inputting a password from the user. <b>It is clear that the password address is pushed onto the stack.</b><br>
 
 If you look closely, you can find a function at the address `0x1fa` <b>that compares `di` and `si`, and they get there from the stack, into which both the reference password and the entered password are pushed.</b>
 
-Before `0x22a` you can see `mov word [bp+0x2],0x1f1`. 
+Before `0x22a`, you can see `mov word [bp+0x2],0x1f1`. 
 
 ![asmStrings5](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs5.png)
 
 This pushes the address of the command to call the comparison function. <br>
-So the answer is to enter firstly enter `1234567890t)`.
-- We erase useless `xor bx, bx`
+So the answer is to enter `1234567890t)`.
+- We erase the useless `xor bx, bx`
 
 ![asmStrings6](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs6.png)
 
-- `t)` is `74 29` for *.com file. `74` - `je`, `29` - offset to `0x22a`. You can find it as a hint
-in data-segment:
+- `t)` is `74 29` for a *.com file. `74h` - `je`, `29h` - offset to `0x22a`. You can find it as a hint
+in the data segment:
 
 ![comHint](https://github.com/Matvey787/Assembler/blob/main/imgs/cormHint.png)
 
-After this jump we got to function `0x22a`, then ret goes to `1f7`. So it calls `0x1fa`, comparison our and our password.
+After this jump, we go to function `0x22a`, then `ret` goes to `1f7`. So it calls `0x1fa`, comparing our password and the reference password.
 ### Second vulnerability
-Thanks to expert, white hacker [Egor](https://github.com/ZEVS1206), he founded another vulnerability in this programm. <br>
-You can easily enter this password <b>1234567890[backtick]</b>. Because of 11 symbols > 10 symbol, so <b>[backtick]</b> writes to *.com
-file 60h. So it changes `xor bx, bx` to `pusha`. So programm pushes all registers, they are zero, and then
-function `1f7` pop two registers and compares them instead of comparing the reference password and the password entered by the user.
+Thanks to expert white hacker [Egor](https://github.com/ZEVS1206), he found another vulnerability in this program. <br>
+You can easily enter this password <b>1234567890[backtick]</b>. Because 11 symbols > 10 symbols, so <b>[backtick]</b> writes to the *.com
+file as 60h. So it changes `xor bx, bx` to `pusha`. So the program pushes all registers, they are zero, and then
+function `1f7` pops two registers and compares them instead of comparing the reference password and the password entered by the user.
 It also works in every case. Cool!!!
 
 # NASM
 ## Repeat
-[Programm](https://github.com/Matvey787/Assembler/blob/main/ASM/NASM/repeat.ASM) easily repeats the symbol and text which you passed.
+[Program](https://github.com/Matvey787/Assembler/blob/main/ASM/NASM/repeat.ASM) easily repeats the symbol and text which you passed.
 ## Shift loop
-[Programm](https://github.com/Matvey787/Assembler/blob/main/ASM/NASM/shiftLoop.ASM) performs a cyclic shift of 1 in an array of three digits `123` -> `231`.
-You can run programs in NASM by such commands:
-- Compilation 32-bit programm
+[Program](https://github.com/Matvey787/Assembler/blob/main/ASM/NASM/shiftLoop.ASM) performs a cyclic shift of 1 in an array of three digits `123` -> `231`.
+You can run programs in NASM with these commands:
+- Compilation of a 32-bit program
 ```
-nasm -f elf32 yourProgramm.ASM -o yourProgramm.o
-ld -m elf_i386 -s -o yourProgramm yourProgramm.o
+nasm -f elf32 yourProgram.ASM -o yourProgram.o
+ld -m elf_i386 -s -o yourProgram yourProgram.o
 ```
-- Compilation 64-bit programm
+- Compilation of a 64-bit program
 ```
-nasm -f elf64 yourProgramm.ASM -o yourProgramm.o
-ld -m -s -o yourProgramm yourProgramm.o
+nasm -f elf64 yourProgram.ASM -o yourProgram.o
+ld -m -s -o yourProgram yourProgram.o
 ```

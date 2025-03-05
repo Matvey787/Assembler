@@ -18,7 +18,7 @@ CXXFLAGS = -I inc -D _DEBUG -lncurses -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc
           -Wlarger-than=81920 -Wstack-usage=81920 -pie -fPIE -Werror=vla
 
 # Object files
-OBJECTS = obj/CRACKalka.o obj/drawPicture.o obj/playMusic.o
+OBJECTS = obj/CRACKalka.o obj/drawPicture.o obj/playMusic.o obj/readWriteFile.o
 
 # Default target
 all: init out

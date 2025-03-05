@@ -3,7 +3,7 @@
 
 #include "errors.h"
 
-errors playMusic(const char* mp3FileName)
+errors playMusic(const char* mp3FileName) // FIXME sfml
 {
     errors err = NO_ERR;
     // Iniтialisation of SDL
