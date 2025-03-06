@@ -2,6 +2,9 @@
 #include <assert.h>
 
 #include "errors.h"
+#include "constants.h"
+#include <SFML/Audio.hpp>
+#include <SFML/Graphics.hpp> 
 
 errors playMusic(const char* mp3FileName) // FIXME sfml
 {
@@ -44,6 +47,64 @@ errors playMusic(const char* mp3FileName) // FIXME sfml
     Mix_FreeMusic(music);
     Mix_CloseAudio();
     SDL_Quit();
+
+    return err;
+}
+
+errors playMusicAndDrawPictureSfml(const char* wavfileName, const char* pngFileName)
+{
+    errors err = NO_ERR;
+
+    // create window
+    sf::RenderWindow window(sf::VideoMode(IMG_WIDTH, IMG_HEIGHT), "CRACKalka");
+
+    sf::Texture texture;
+    if (!texture.loadFromFile(pngFileName)) {
+        fprintf(stderr, "Error: Could not load duck.png");
+        return FILE_PNG_NOT_FOUND;
+    }
+
+    // Create a sprite
+    sf::Sprite sprite;
+    sprite.setTexture(texture);
+
+
+    // create object of music
+    sf::Music music;
+
+    // load music file
+    if (!music.openFromFile(wavfileName)) {
+        return MUS_PLAYBACK_ERR;
+    }
+
+    // play
+    music.play();
+
+    while (window.isOpen()) {
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+
+            // play/pause/stop music by keyboard
+            if (event.type == sf::Event::KeyPressed) {
+                if (event.key.code == sf::Keyboard::Space) {
+                    if (music.getStatus() == sf::Music::Playing) {
+                        music.pause();
+                    } else {
+                        music.play();
+                    }
+                } else if (event.key.code == sf::Keyboard::S) {
+                    music.stop();
+                }
+            }
+        }
+
+        window.clear();
+        window.draw(sprite);
+        window.display();
+
+    }
 
     return err;
 }

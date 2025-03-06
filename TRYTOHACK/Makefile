@@ -1,7 +1,7 @@
 # Compiler and flags
 CXX = g++
 SANITIZER = -fsanitize=address,alignment,bool,bounds,enum,float-cast-overflow,float-divide-by-zero,integer-divide-by-zero,leak,nonnull-attribute,null,object-size,return,returns-nonnull-attribute,shift,signed-integer-overflow,undefined,unreachable,vla-bound,vptr
-SFML_AND_SDL2 = -lsfml-graphics -lsfml-window -lsfml-system -lSDL2 -lSDL2_mixer
+SFML_AND_SDL2 = -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system -lSDL2 -lSDL2_mixer
 CXXFLAGS = -I inc -D _DEBUG -lncurses -ggdb3 -std=c++17 -O0 -Wall -Wextra -Weffc++                 \
 		  -Waggressive-loop-optimizations 														   \
           -Wc++14-compat -Wmissing-declarations -Wcast-align -Wcast-qual -Wchar-subscripts 		   \

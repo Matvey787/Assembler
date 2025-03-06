@@ -8,7 +8,6 @@
 // We go through the *.com file and replace byte after jne with 04 - address of success.
 int main(int argc, char const *argv[])
 {
-    ErrorHandler err2();
     errors err = NO_ERR;
     if (argc != 3)
     {
@@ -23,7 +22,8 @@ int main(int argc, char const *argv[])
         printf("Something go wrong during processing com file!\n");
         return err;
     }
-    err = playMusic("sigma.mp3"); // play music and call func which draws window  
+    // err = playMusic("sigma.mp3"); // play music and call func which draws window  
+    err = playMusicAndDrawPictureSfml("sigma.mp3", "duck.png");
     return err;
 }
 
@@ -40,30 +40,31 @@ errors procComFile(const char* configFileName, const char* comFileName)
     // for config file 
     buffer confBuff = {0};
 
-    err = readFile(&(comBuff.data),  comFileName,    &(comBuff.size));
-    err = readFile(&(confBuff.data), configFileName, &(confBuff.size));
-
+    readFile(&(comBuff.data),  comFileName,    &(comBuff.size), nullptr);
+    readFile(&(confBuff.data), configFileName, &(confBuff.size), nullptr);
+    
 
     printf("File content:\n-------------------- start --------------------\n");
-    for (size_t i = 0; i < confBuff.size; ++i) 
+    for (size_t i = 0; i < comBuff.size; ++i) 
     {
         if (i % 16 == 0 && i != 0)
         {
             printf("\n");
         }
 
-        if (confBuff.data[i] >= 32 && confBuff.data[i] <= 126)
+        if (comBuff.data[i] >= 32 && comBuff.data[i] <= 126)
         {
-            printf("%lc ", confBuff.data[i]);
+            printf("%lc ", comBuff.data[i]);
         }
         else
         {
-            printf("%x ", confBuff.data[i]);
+            printf("%x ", comBuff.data[i]);
         }
     }
     printf("\n-------------------- end --------------------\n");
 
     crackFile(&comBuff, &confBuff);
+
     // rewrite file
     err = writeFile(comBuff.data, comFileName, comBuff.size);
 
@@ -79,9 +80,9 @@ errors crackFile(buffer* comBuff, buffer* confBuff)
 {
     assert(comBuff != nullptr);
     assert(confBuff != nullptr);
-
+    printf("crackFile\n");
     // parsing config file
-    size_t codeSection = 0; // offset of code section in com file
+    unsigned int codeSection = 0; // offset of code section in com file
     bool skipComm = false;
     bool codeSectionFound = false;
     for (size_t i = 0; i < confBuff->size; ++i)
@@ -103,29 +104,28 @@ errors crackFile(buffer* comBuff, buffer* confBuff)
                 codeSectionFound = true;
                 continue;
             }
-            size_t addressOfStart = 0;   // start address of bytes to change in com file
-            size_t bytesToChange  = 0;   // number of bytes to change in com file
+            unsigned int addressOfStart = 0;   // start address of bytes to change in com file
+            unsigned int bytesToChange  = 0;   // number of bytes to change in com file
 
-            if (!sscanf((const char*)(confBuff->data + i), "%lxh", &addressOfStart))
+            if (!sscanf((const char*)(confBuff->data + i), "%xh", &addressOfStart))
                 return NO_ADDRES_OF_CHANGES;
             i += 5; // skeep 4 symbols of number and ' '
 
-            if (!sscanf((const char*)(confBuff->data + i), "%lu", &bytesToChange))
+            if (!sscanf((const char*)(confBuff->data + i), "%u", &bytesToChange))
                 return NO_BYTES_TO_CHANGE;
             i += 2; // skeep digit and ' '
 
-            size_t offset = addressOfStart - codeSection;
-            printf("offset: %u %u\n", offset, bytesToChange);
+            unsigned int offset = addressOfStart - codeSection;
             for (size_t j = 0; j < bytesToChange; ++j)
             {
-                size_t byte = 0;
-                if (!sscanf((const char*)(confBuff->data + i), "%x", &byte));
+                unsigned int byte = 0;
+                if (!sscanf((const char*)(confBuff->data + i), "%x", &byte))
                     return NO_NEW_BYTES;
-
                 comBuff->data[offset + j] = (unsigned char)byte;
 
                 i += 3; // skip readed byte and ' '
             }
         }
     }
+    return NO_ERR;
 }

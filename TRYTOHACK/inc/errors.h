@@ -6,6 +6,10 @@
 #define ERRORS_H
 
 #include <stdio.h>
+#include <strings.h>
+#include <iostream>
+
+const size_t lenOfTempStr = 100;
 
 enum errors
 {
@@ -25,20 +29,21 @@ enum errors
 
 };
 
-class ErrorHandler {
+class myError : public std::exception {
     private:
         errors errorCode;
         char fileName[20];
         int lineNum;
+        mutable char tempStr[lenOfTempStr] = {0};
     
     public:
         // initialize error
-        ErrorHandler(errors code = NO_ERR, const char* file = nullptr, int line = 0) 
+        myError(errors code = NO_ERR, const char* file = nullptr, int line = 0) 
                     : errorCode(code), lineNum(line) 
         {
             if (file) 
             {
-                strncpy(fileName, file, sizeof(fileName) - 1);
+                // strncpy(fileName, file, sizeof(fileName) - 1);
                 fileName[sizeof(fileName) - 1] = '\0';
             } 
             else 
@@ -46,21 +51,17 @@ class ErrorHandler {
                 fileName[0] = '\0';
             }
         }
-    
-        // Функция для установки новой ошибки
-        void setError(errors code, const char* file, int line) {
-            errorCode = code;
-            lineNum = line;
-            if (file) {
-                strncpy(fileName, file, sizeof(fileName) - 1);
-                fileName[sizeof(fileName) - 1] = '\0';
-            } else {
-                fileName[0] = '\0';
-            }
+
+        const char * what () const noexcept override
+        {
+            snprintf(tempStr, lenOfTempStr, "Error: %s, file: %s, line: %d", getErrorMessage(), fileName, lineNum);
+            return tempStr;
         }
-    
-        const char* getErrorMessage() const {
-            switch (errorCode) {
+
+        const char* getErrorMessage() const 
+        {
+            switch (errorCode) 
+            {
                 case NO_ERR:                   return "No error";
                 case FILE_MP3_NOT_FOUND:       return "MP3 file not found";
                 case FILE_PNG_NOT_FOUND:       return "PNG file not found";
@@ -78,17 +79,6 @@ class ErrorHandler {
             }
         }
 
-        errors getErrorCode() const { return errorCode; }
-        const char* getFileName() const { return fileName; }
-        int getLineNumber() const { return lineNum; }
-        
-        void printErrorInfo() const {
-            printf("Error: %s\n", getErrorMessage());
-            if (fileName[0] != '\0') {
-                printf("File: %s\n", fileName);
-            }
-            printf("Line: %d\n", lineNum);
-        }
 };
 
 #endif // ERRORS_H

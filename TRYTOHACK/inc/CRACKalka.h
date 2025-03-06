@@ -12,11 +12,12 @@ struct buffer
 };
 
 errors playMusic   (const char* mp3FileName);
+errors playMusicAndDrawPictureSfml(const char* wavfileName, const char* pngFileName);
 errors drawWindow  (Mix_Music* music);
 errors procComFile(const char* configFileName, const char* comFileName);
 errors crackFile(buffer* comBuff, buffer* confBuff);
-errors readFile    (unsigned char** buffer, const char* file_name, size_t* numOfSymbols = nullptr, 
-                                                                   size_t* numOfStrs    = nullptr);
+void readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymbols,
+                                                             size_t* numOfStrs);
 errors writeFile   (const unsigned char* buffer, const char* file_name, size_t numOfSymbols);
 
 #endif // CRACKALKA_H

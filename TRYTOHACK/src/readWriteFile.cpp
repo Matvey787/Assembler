@@ -4,8 +4,8 @@
 #include "CRACKalka.h"
 #include "errors.h"
 
-errors readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymbols,
-                                                               size_t* numOfStrs, ErrorHandler* err)
+void readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymbols = nullptr,
+                                                             size_t* numOfStrs    = nullptr)
 {
     assert(buffer       != nullptr);
     assert(file_name    != nullptr);
@@ -15,8 +15,8 @@ errors readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymb
 
     // if the file can't be opened, return an error
     if (rFile == nullptr) {
-        err->setError(FILE_COM_NOT_FOUND, __FILE__, __LINE__);
-        return err->getErrorCode();
+        //throw myError(FILE_COM_NOT_FOUND, __FILE__, __LINE__);
+        assert(0);
     }
 
     // find size of file
@@ -29,8 +29,8 @@ errors readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymb
 
     // if the memory can't be allocated, return an error
     if (*buffer == nullptr) {
-        err->setError(ALLOCATE_MEM_FAIL, __FILE__, __LINE__);
-        return err->getErrorCode();
+        //myError(ALLOCATE_MEM_FAIL, __FILE__, __LINE__);
+        assert(0);
     }
 
     // read the file into the buffer
@@ -56,7 +56,6 @@ errors readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymb
     
 
     fclose(rFile);
-    return err->getErrorCode();
 }
 
 errors writeFile(const unsigned char* buffer, const char* file_name, size_t numOfSymbols)
