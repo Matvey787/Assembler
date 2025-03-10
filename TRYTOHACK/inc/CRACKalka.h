@@ -16,8 +16,11 @@ errors playMusicAndDrawPictureSfml(const char* wavfileName, const char* pngFileN
 errors drawWindow  (Mix_Music* music);
 errors procComFile(const char* configFileName, const char* comFileName);
 errors crackFile(buffer* comBuff, buffer* confBuff);
-void readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymbols,
-                                                             size_t* numOfStrs);
+errors readFile(unsigned char** buffer, const char* file_name, size_t* numOfSymbols = nullptr,
+                                                               size_t* numOfStrs = nullptr);
 errors writeFile   (const unsigned char* buffer, const char* file_name, size_t numOfSymbols);
+errors parseString(buffer* confBuff, buffer* comBuff, size_t* offset, bool* codeSectionFound);
+errors readFileMmap(unsigned char** buffer, const char* file_name, size_t* numOfSymbols = nullptr, 
+                                                                   size_t* numOfStrs = nullptr);
 
 #endif // CRACKALKA_H

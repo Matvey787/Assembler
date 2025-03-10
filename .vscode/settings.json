@@ -6,6 +6,10 @@
         "iostream": "cpp",
         "random": "cpp",
         "optional": "cpp",
-        "variant": "cpp"
-    }
+        "variant": "cpp",
+        "*.tcc": "cpp",
+        "fstream": "cpp"
+    },
+    "Codegeex.CommitMessage.LanguagePreference": "English",
+    "Codegeex.Chat.LanguagePreference": "English"
 }

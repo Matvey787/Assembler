@@ -29,6 +29,16 @@ enum errors
 
 };
 
+const char* getErrPhrase(errors error);
+
+#define M_CATCHERR(file_name, str_pos, func_name)                                        \
+    if (err != NO_ERR)                                                                   \
+    {                                                                                    \
+        if (strcmp(func_name, "main") != 0 || err == WRONG_NUM_OF_ARGS)                  \
+            printf("%s:%d (%s) %s\n", file_name, str_pos, func_name, getErrPhrase(err)); \
+        return err;                                                                      \
+    }
+
 class myError : public std::exception {
     private:
         errors errorCode;

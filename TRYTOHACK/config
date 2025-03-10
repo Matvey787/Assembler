@@ -1,5 +1,8 @@
 # begin of .code section
+
 100h
-# changelog (arg1: start address where you want to write, arg2: number of bytes changed (1-9), 
-#                                                                              then goes new values)
-169h 2 74 21
+
+# Changelog (arg1: start address where you want to write, arg2: number of bytes changed (1-9),
+# then new values)
+
+169h 2 74 27
