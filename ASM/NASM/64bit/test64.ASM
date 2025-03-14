@@ -1,17 +1,22 @@
 %include "MG_NASM64bit.inc"
 
 section .data
-    A db '1'
+    A db "12345rfg"
 
 section .text
 global _start
 _start:
-    ;PUTC [A]
+    mov rax, 4
+    lea r13, A
     ;PUTC 10
-    mov rax, 18446744073709551615
-    PRINTNUM rax
+    ;mov rax, 123
+    ;PRSIGN r12
+    ;PRNUM r13
+    PRBIN rax
     PUTC 10
-    ; PRINT "Number: "
+    PRHEX rax
+    PUTC 10
+    ;PRINT "Number: "
     ; PRINTNUM rax
     ; PUTC 10
 

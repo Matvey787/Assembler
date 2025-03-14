@@ -5,6 +5,14 @@
 
 #include <assert.h>
 
+#define M_CATCHERR(err_, file_name, str_pos, func_name)                                        \
+    if (err_ != NO_ERR)                                                                   \
+    {                                                                                    \
+        if (strcmp(func_name, "main") != 0 || err == WRONG_NUM_OF_ARGS)                  \
+            printf("%s:%d (%s) %s\n", file_name, str_pos, func_name, getErrPhrase(err)); \
+        return err_;                                                                      \
+    }
+
 // We go through the *.com file and replace byte after jne with 04 - address of success.
 int main(int argc, char const *argv[])
 {
@@ -13,7 +21,7 @@ int main(int argc, char const *argv[])
     {
         err = WRONG_NUM_OF_ARGS;
     }
-    M_CATCHERR(__FILE__, __LINE__, __func__);
+    M_CATCHERR(__FILE__, __LINE__, __func__); // FIXME 
 
     err = procComFile(argv[1], argv[2]);
     M_CATCHERR(__FILE__, __LINE__, __func__);
@@ -36,7 +44,7 @@ errors procComFile(const char* configFileName, const char* comFileName)
     // for config file 
     buffer confBuff = {0};
 
-    err = readFileMmap(&(comBuff.data), comFileName, &(comBuff.size));
+    err = readFileMmap(&(comBuff.data), comFileName, &(comBuff.size)); // FIXME unmap
     M_CATCHERR(__FILE__, __LINE__, __func__);
 
     err = readFile(&(confBuff.data), configFileName, &(confBuff.size));
@@ -94,7 +102,7 @@ errors crackFile(buffer* comBuff, buffer* confBuff)
         if (confBuff->data[offset] == '#')
         {
             skipComm = true;
-        }
+        }readFileMmap
         else if (confBuff->data[offset] == '\n')
         {
             skipComm = false;
@@ -144,6 +152,7 @@ errors parseString(buffer* confBuff, buffer* comBuff, size_t* offset, bool* code
     printf("bytes to change: %d\n", bytesToChange);
     *offset += (size_t)readedChars; // skip digit and ' '
     ++*offset; // skip ' '
+    
     unsigned int COMFileoffset = addressOfStart - codeSection;
     for (size_t j = 0; j < bytesToChange; ++j)
     {

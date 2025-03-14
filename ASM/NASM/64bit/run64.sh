@@ -1,5 +1,3 @@
-nasm -f elf64 $1.ASM -o ../obj/$1_64.o
-ld ../obj/$1_64.o -o ../obj/$1_64
-cd ..
-./obj/$1_64
-cd - > /dev/null
+nasm -f elf64 $1.ASM -o $1_64.o
+ld $1_64.o -o $1_64
+./$1_64
