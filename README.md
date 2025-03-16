@@ -189,14 +189,15 @@ It also works in every case. Cool!!!
 [Printf](ASM/NASM/64bit/repeat.ASM) is one of the popular C functions rewritten by me.
 You can see specificators in the table below:
 
-| Specificator  | Input | Output |
-| ------------- | ------------- |
-| %d            | Signed decimal number | Signed decimal number |
-| %b            | Unsigned decimal number | Binary number  |
-| %o            | Unsigned decimal number | Octal number  |
-| %x            | Unsigned decimal number | Hexadecimal number  |
-| %c            | char (one byte) | char  |
-| %s            | char array | char array  |
+| Specificator | Input                  | Output               |
+|--------------|------------------------|----------------------|
+| %d           | Signed decimal number  | Signed decimal number|
+| %b           | Unsigned decimal number| Binary number        |
+| %o           | Unsigned decimal number| Octal number         |
+| %x           | Unsigned decimal number| Hexadecimal number   |
+| %c           | char (one byte)        | char                 |
+| %s           | char array             | char array           |
+
 >[!NOTE]
 > \n also supported  
 
