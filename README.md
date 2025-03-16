@@ -186,7 +186,7 @@ It also works in every case. Cool!!!
 ### 64-bit
 #### My printf function
 
-[Printf](ASM/NASM/64bit/repeat.ASM) is one of the popular C functions rewritten by me.
+[Printf](ASM/NASM/64bit/myPrintf.ASM) is one of the popular C functions rewritten by me.
 You can see specificators in the table below:
 
 | Specificator | Input                  | Output               |
