@@ -199,7 +199,7 @@ You can see specificators in the table below:
 | %s           | char array             | char array           |
 
 >[!NOTE]
-> \n also supported  
+> `\n` also supported  
 
 ### 32-bit
 #### Repeat
