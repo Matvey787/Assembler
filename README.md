@@ -183,13 +183,31 @@ It also works in every case. Cool!!!
 
 ## NASM
 
-### Repeat
+### 64-bit
+#### My printf function
 
-[Program](https://github.com/Matvey787/Assembler/blob/main/ASM/NASM/repeat.ASM) easily repeats the symbol and text which you passed.
+[Printf](ASM/NASM/64bit/repeat.ASM) is one of the popular C functions rewritten by me.
+You can see specificators in the table below:
 
-### Shift loop
+| Specificator  | Input | Output |
+| ------------- | ------------- |
+| %d            | Signed decimal number | Signed decimal number |
+| %b            | Unsigned decimal number | Binary number  |
+| %o            | Unsigned decimal number | Octal number  |
+| %x            | Unsigned decimal number | Hexadecimal number  |
+| %c            | char (one byte) | char  |
+| %s            | char array | char array  |
+>[!NOTE]
+> \n also supported  
 
-[Program](https://github.com/Matvey787/Assembler/blob/main/ASM/NASM/shiftLoop.ASM) performs a cyclic shift of 1 in an array of three digits `123` -> `231`.
+### 32-bit
+#### Repeat
+
+[Program](ASM/NASM/32bit/repeat.ASM) easily repeats the symbol and text which you passed.
+
+#### Shift loop
+
+[Program](ASM/NASM/32bit/shiftLoop.ASM) performs a cyclic shift of 1 in an array of three digits `123` -> `231`.
 You can run programs in NASM with these commands:
 
 - Compilation of a 32-bit program
