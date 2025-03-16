@@ -2,107 +2,284 @@
 
 %include "MG_NASM64bit.inc"
 
+section .data
+    buffer db 500 dup(0)
+    
 section .text
-global myprintf         
+global myprintf
+; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+;       Defined globally and does not change anywhere:
+;       rdi - format string
+;       rsi - buffer
+;       rbp - stack frame
+;       r8 - offset of stack frame
+; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-; rdi - first argument (format string)
-; rsi - second argument (decimal)
-; rdx - third argument (string)
-; rcx - fourth argument (char)
-; r8  - fifth argument (binary)
-; r9  - sixth argument (hexadecimal)
+; |---------------------------------------------------------------------------------------|
+; | A proc that recursively translates a number into ascii code and stores it in a buffer |
+; | Entry: rax - number to be translated,                                                 |
+; |        rbx - divisor,                                                                 |
+; |        rsi - buffer                                                                   |
+; | Exit:  number in buffer                                                               |
+; | Destr: RAX, RBX, RDX                                                                  |
+; |---------------------------------------------------------------------------------------|
+print_num_recursive:
+    push rbp
+    mov rbp, rsp
+    cmp rax, 0
+    jz .rec_done
+    xor rdx, rdx
+    div rbx
+    cmp rdx, 10
+    jge .addA
+    add rdx, '0'
+    jmp .skip
+.addA:
+    add rdx, 'A' - 10
+.skip:
+    push rdx
+    call print_num_recursive
+    pop rdx
+    mov [rsi], dl
+    inc rsi
+.rec_done:
+    mov rsp, rbp
+    pop rbp
+    ret
 
+; |-----------------------------------------------------|
+; | A proc that process %d (decimal) from format string |
+; | Entry: rbp - stack frame                            |
+; |        r8 - offset of stack frame                   |
+; |        rsi - buffer                                 |
+; | Exit:  number in buffer                             |
+; | Destr: RAX, RBX, RCX, RDX, r10                      |
+; |-----------------------------------------------------|
+print_decimal:
+    multiPush rax, rbx, rcx, rdx
+    mov r10, rbp
+    add r10, r8
+    mov rax, [r10]
+    mov rcx, rax
+    shr rcx, 63
+    mov rbx, 10
+    xor rdx, rdx
+    test rcx, rcx
+    jz .positive_start
+    neg rax
+    mov byte [rsi], '-'
+    inc rsi
+.positive_start:
+    test rax, rax
+    jnz .convert_loop
+    mov byte [rsi], '0'
+    inc rsi
+    jmp .decimal_done
+.convert_loop:
+    call print_num_recursive
+.decimal_done:
+    multiPop rdx, rbx, rcx, rax
+    inc rdi
+    add r8, r9
+    cmp r8, -48
+    jne .skip_stack_reverse
+    mov r8, 16
+    mov r9, 8
+.skip_stack_reverse:
+    jmp myprintf.process_format_string
+
+; |-----------------------------------------------------------------------------------|
+; | A proc that process %b (binary), %o (occtal), %x (hexadecimal) from format string |
+; | Entry: rbp - stack frame,                                                         |
+; |        r8 - offset of stack frame,                                                |
+; |        rsi - buffer,                                                              |
+; |        rdi - format string                                                        |
+; |        rbx - divisor of system                                                    |
+; | Exit:  number in buffer                                                           |
+; | Destr: RAX, RBX, RCX, RDX, r10                                                    |
+; |-----------------------------------------------------------------------------------|
+print_bin_oct_hex:
+    mov r10, rbp
+    add r10, r8
+    mov rax, [r10]
+    mov rcx, rax
+    shr rcx, 63
+    xor rdx, rdx
+    call print_num_recursive
+    inc rdi
+    add r8, r9
+    cmp r8, -48
+    jne .skip_stack_reverse
+    mov r8, 16
+    mov r9, 8
+.skip_stack_reverse:
+    jmp myprintf.process_format_string
+
+; |--------------------------------------------------|
+; | A proc that process %c (char) from format string |
+; | Entry: rbp - stack frame,                        |
+; |        r8 - offset of stack frame,               |
+; |        rsi - buffer,                             |
+; |        rdi - format string                       |
+; | Exit:  number in buffer                          |
+; | Destr: RAX, RBX, RCX, RDX, r10                   |
+; |--------------------------------------------------|
+print_char:
+    mov r10, rbp
+    add r10, r8
+    mov rax, [r10]
+    mov [rsi], rax
+    inc rsi
+    inc rdi
+    add r8, r9
+    cmp r8, -48
+    jne .skip_stack_reverse
+    mov r8, 16
+    mov r9, 8
+.skip_stack_reverse:
+    jmp myprintf.process_format_string
+    
+; |----------------------------------------------------|
+; | A proc that process %s (string) from format string |
+; | Entry: rbp - stack frame,                          |
+; |        r8 - offset of stack frame,                 |
+; |        rsi - buffer,                               |
+; |        rdi - format string                         |
+; | Exit:  number in buffer                            |
+; | Destr: RAX, RBX, RCX, RDX, r10                     |
+; |----------------------------------------------------|
+print_string:
+    mov r10, rbp       
+    add r10, r8        
+    mov rax, r10       
+
+.wr_string:
+    movzx rcx, byte [rax]  
+    test cl, cl
+    je .done
+    mov [rsi], cl
+    inc rsi
+    inc rax
+    jmp .wr_string
+
+.done:
+    inc rdi
+    add r8, r9
+    cmp r8, -48
+    jne .skip_stack_reverse
+    mov r8, 16
+    mov r9, 8
+.skip_stack_reverse:
+    jmp myprintf.process_format_string
+
+
+; |-----------------------------------------------------------------|
+; | A proc printing a format string with specifiers                 |
+; | Entry: rdi - format string,                                     |
+; |        rsi - buffer,                                            |
+; |        rsi, rdx, rcx, r8, r9 - args of frmt str,                |
+; |        stack - args of frmt str (optionally if num of args > 6) |
+; | Exit:  string in bash                                           |
+; | Destr: RAX, RBX, RCX, RDX, RSI, RDI, R8, R9, RBP, RSP           |
+; |-----------------------------------------------------------------|
 myprintf:
     push rbp                    ; save old base pointer of stack frame
     mov rbp, rsp                ; set new pointer of stack frame
 
-    ; callee-saved registers
-    push rbx                    ; save rbx
-    push r12                    ; save r12
-    push r13                    ; save r13
-    
-    mov rbx, rdi                ; rbx is pointing to format string
-    mov r12, rsi                ; argument of %d
-    mov r13, rdx                ; argument of %s
+    push rsi
+    push rdx
+    push rcx
+    push r8
+    push r9
+
+    lea rsi, buffer
+    mov r8, -8
+    mov r9, -8
 
 .process_format_string:
-    movzx eax, byte [rbx]       ; load char byte from format string
-    test eax, eax               ; check if it is null terminator
+    movzx rax, byte [rdi]       ; load char byte from format string
+    cmp rax, 0
     jz .done
 
-    cmp eax, '%'                ; check if it is a format specifier
-    je .handle_specifier        ; handle chars after %
+    cmp rax, '%'
+    je .handle_specifier
 
-    PUTC [rbx]                  ; print char
+    cmp rax, '\'
+    je .handle_special_char
 
-    inc rbx
+    mov [rsi], rax
+
+    ; PUTC [rbx]                  ; print char
+
+    inc rdi
+    inc rsi
     jmp .process_format_string
 
-.handle_specifier:
-    inc rbx                     ; skip '%'
-    movzx eax, byte [rbx]       ; load specifier
+; for \n construction
+.handle_special_char:
+    inc rdi                     ; skip '\'
+    movzx rax, byte [rdi]
+    cmp rax, 'n'
+    jne .not_slash_n
+    mov [rsi], byte 10
+.not_slash_n:
+    mov [rsi], rax
+    inc rsi
+    jmp .process_format_string
 
-    cmp eax, 'd'                ; check if it is a decimal specifier
+
+
+.handle_specifier:
+    inc rdi                     ; skip '%'
+    movzx eax, byte [rdi]       ; load specifier
+
+    ; checking of specifiers
+    cmp eax, 'd'
     je .set_decimal
-    cmp eax, 's'                ; check if it is a string specifier
+    cmp eax, 's'
     je .set_string
-    cmp eax, 'c'                ; check if it is a char specifier
+    cmp eax, 'c'
     je .set_char
-    cmp eax, 'b'                ; check if it is a binary specifier
+    cmp eax, 'b'
     je .set_bin
-    cmp eax, 'h'                ; check if it is a hexadecimal specifier
+    cmp eax, 'o'
+    je .set_oct
+    cmp eax, 'x'
     je .set_hex
 
     jmp .invalid_specifier      ; handle invalid specifier
 
 .set_decimal:
-    mov rax, 0                  ; %d -> index 0
+    mov rax, 0                  ; %d -> index = 0
     jmp .do_jump
 
+; for hex, bin, obt index = 1
 .set_bin:
-    mov rax, 1                  ; %b -> index 1
+    mov rax, 1
+    mov rbx, 2
+    jmp .do_jump
+
+.set_oct:
+    mov rax, 1
+    mov rbx, 8
     jmp .do_jump
 
 .set_hex:
-    mov rax, 2                  ; %h -> index 2
+    mov rax, 1
+    mov rbx, 16
     jmp .do_jump
 
+
 .set_char:
-    mov rax, 3                  ; %c -> index 3
+    mov rax, 2                  ; %c -> index 2
     jmp .do_jump
 
 .set_string:
-    mov rax, 4                  ; %s -> index 4
+    mov rax, 3                  ; %s -> index 3
 
 .do_jump:
     lea rax, [jmp_table + rax * 8]
     jmp [rax]
-
-; -------------------- funcs for printing specifiers args --------------------
-.print_decimal:
-    PRNUM r12
-    inc rbx
-    jmp .process_format_string
-
-.print_binary:
-    PRBIN r12
-    inc rbx
-    jmp .process_format_string
-
-.print_hexadecimal:
-    PRHEX r12
-    inc rbx
-    jmp .process_format_string
-
-.print_char:
-    PUTC [r13]
-    inc rbx
-    jmp .process_format_string
-
-.print_string:
-    PRINT [r13]
-    inc rbx
-    jmp .process_format_string
 
 .invalid_specifier:
     inc rbx                     ; skip invalid specifier
@@ -111,17 +288,22 @@ myprintf:
 ; ---------------------------------------------------------------------------
 
 .done:
-    pop r13
-    pop r12
-    pop rbx
     mov rsp, rbp
     pop rbp
+
+    ; print buffer to bash
+    mov rax, 1
+    mov rdi, 1
+    mov rdx, rsi
+    lea rsi, [buffer]
+    sub rdx, rsi
+    syscall
+
     ret
 
 section .data
     jmp_table:
-        dq myprintf.print_decimal
-        dq myprintf.print_binary
-        dq myprintf.print_hexadecimal
-        dq myprintf.print_char
-        dq myprintf.print_string
+        dq print_decimal
+        dq print_bin_oct_hex
+        dq print_char
+        dq print_string
