@@ -56,7 +56,6 @@ print_num_recursive:
 ; | Destr: RAX, RBX, RCX, RDX, r10                      |
 ; |-----------------------------------------------------|
 print_decimal:
-    multiPush rax, rbx, rcx, rdx
     mov r10, rbp
     add r10, r8
     mov rax, [r10]
@@ -78,7 +77,6 @@ print_decimal:
 .convert_loop:
     call print_num_recursive
 .decimal_done:
-    multiPop rdx, rbx, rcx, rax
     inc rdi
     add r8, r9
     cmp r8, -48
@@ -138,7 +136,7 @@ print_char:
     mov r9, 8
 .skip_stack_reverse:
     jmp myprintf.process_format_string
-    
+
 ; |----------------------------------------------------|
 ; | A proc that process %s (string) from format string |
 ; | Entry: rbp - stack frame,                          |
@@ -149,17 +147,16 @@ print_char:
 ; | Destr: RAX, RBX, RCX, RDX, r10                     |
 ; |----------------------------------------------------|
 print_string:
-    mov r10, rbp       
-    add r10, r8        
-    mov rax, r10       
+    mov rax, rbp
 
 .wr_string:
+    add rax, rbp
     movzx rcx, byte [rax]  
     test cl, cl
     je .done
     mov [rsi], cl
     inc rsi
-    inc rax
+    add rbp, r9
     jmp .wr_string
 
 .done:
