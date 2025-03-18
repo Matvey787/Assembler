@@ -1,6 +1,9 @@
-extern void myprintf(const char *format, ...);
+extern int myprintf(const char *format, ...);
 
 int main()
 {
-    myprintf("%b \\n %c %o %x %d %x", 11, 'a', -11, 423, 189, 1233);
+    if (myprintf("%s %5 %b\n","qwety", 8, 11, 18) == -1)
+    {
+        myprintf("%s\n", "Error!");
+    };
 }
