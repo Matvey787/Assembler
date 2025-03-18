@@ -80,23 +80,25 @@ Program is the easiest example of a "cracking" program. It goes through the code
 modifies it to work even if the user didn't guess the password. The program simply replaces the
 jump addresses of commands such as 'JNE' (or 'JNZ') in the COM file.  
 Here is an example of the [source file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.COM) that
-needs to be hacked. <br>
+needs to be hacked.  
 First of all, I need to understand how the COM file works. So I disassemble it:
 >[!NOTE]
 > Download NASM to Linux first.
-```
+
+``` bash
 ndisasm -b 16 -o 100h com/file/path.COM > asm/file/path.asm
 ```
+
 - 100h means the offset of the code in the COM file.
 - -b 16 means 16-bit code (optionally it could be 32 or 64-bit code)
 
-After this, you can find the [*.asm file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.asm) with the disassembled code. Now you can analyze it and find its vulnerabilities. After the first 
-viewing, I found interesting strings: <br>
+After this, you can find the [*.asm file](https://github.com/Matvey787/Assembler/blob/main/TRYTOHACK/PROGFORHACK.asm) with the disassembled code. Now you can analyze it and find its vulnerabilities. After the first
+ viewing, I found interesting strings:  
 
 ![asmStrings](https://github.com/Matvey787/Assembler/blob/main/imgs/asmStrs.png)
 
-This is what we need; this is where the comparison of two lines occurs, the addresses 
-of which are temporarily stored in the `si` and `di` registers. If at least one symbol
+This is what we need; this is where the comparison of two lines occurs, the addresses
+ of which are temporarily stored in the `si` and `di` registers. If at least one symbol
 does not match, the program will jump to the label written after `jnz` (or `jne`).
 We see a successful transition right after `cmp al, 0x0`, because if all symbols were the same,
 we go to the end, which is 00h. So we need to change `jnz 0x173` -> `jnz 0x165`.
@@ -184,6 +186,7 @@ It also works in every case. Cool!!!
 ## NASM
 
 ### 64-bit
+
 #### My printf function
 
 [Printf](ASM/NASM/64bit/myPrintf.ASM) is one of the popular C functions rewritten by me.
@@ -199,9 +202,10 @@ You can see specificators in the table below:
 | %s           | char array             | char array           |
 
 >[!NOTE]
-> `\n` also supported  
+> `%%` also supported  
 
 ### 32-bit
+
 #### Repeat
 
 [Program](ASM/NASM/32bit/repeat.ASM) easily repeats the symbol and text which you passed.
