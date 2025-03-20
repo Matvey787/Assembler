@@ -191,35 +191,38 @@ print_hex:
 ; |-----------------------------------------------------------------------------------|
 
 print_bin_oct:
-    mov rax, [rsp]          ; Загружаем число со стека
-    mov r10, rsi            ; Сохраняем начальный указатель буфера в R10
+    ; load number
+    mov rax, [rsp]
+    mov r10, rsi
 
 .convert_loop:
-    cmp rax, 0              ; Проверяем, закончилось ли число
+    cmp rax, 0
     je .convert_done
-    xor rdx, rdx            ; Очищаем RDX
-    div rbx                 ; Делим RAX на основание (RBX)
-    add rdx, '0'            ; Преобразуем остаток в ASCII (0-7 для %b и %o)
-    mov [rsi], dl           ; Записываем в буфер
-    inc rsi                 ; Сдвигаем указатель
+    xor rdx, rdx
+    div rbx
+    add rdx, '0'
+    mov [rsi], dl
+    inc rsi
     jmp .convert_loop
 .convert_done:
-    mov rcx, r10            ; RCX = начало строки (левый указатель)
+    mov rcx, r10
     mov r10, rsi
-    dec rsi                 ; RSI = конец строки - 1 (правый указатель)
+    dec rsi
 
+    ; reverse number
 .reverse_loop:
-    cmp rcx, rsi            ; Сравниваем указатели
-    jge .reverse_done       ; Если левый >= правый, конец
-    mov al, byte [rcx]      ; Байт с левого конца
-    mov ah, byte [rsi]      ; Байт с правого конца
-    mov byte [rsi], al      ; Меняем местами
+    cmp rcx, rsi
+    jge .reverse_done
+    ; exchange
+    mov al, byte [rcx]
+    mov ah, byte [rsi]
+    mov byte [rsi], al
     mov byte [rcx], ah
-    inc rcx                 ; Двигаем левый вправо
-    dec rsi                 ; Двигаем правый влево
+    inc rcx
+    dec rsi
     jmp .reverse_loop
 .reverse_done:
-    mov rsi, r10            ; Восстанавливаем RSI в начало буфера
+    mov rsi, r10
 
     ;xor rdx, rdx
     ; call print_num_recursive
