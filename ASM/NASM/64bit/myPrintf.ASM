@@ -128,7 +128,7 @@ print_percent:
     jmp myprintf.process_format_string
 
 ; |-----------------------------------------------------------------------------------|
-; | A proc that process %x (hexadecimal) from format string |
+; | A proc that process %x (hexadecimal) from format string                           |
 ; | Entry: rbp - stack frame,                                                         |
 ; |        r8 - offset of stack frame,                                                |
 ; |        rsi - buffer,                                                              |
@@ -144,28 +144,29 @@ print_hex:
     mov edx, 8
     xor ecx, ecx
 
-writeNum_loop:
-    mov rbx, rax    ; number -> rbx
-    
-    convert_loop:
-    and rbx, 0xF000
-    or rcx, rbx
-    test rcx, rcx
-    jz skip_adding_to_buff
+.writeNum_loop:
+    mov ebx, eax    ; number -> rbx
 
-    lea rbx, [symbols + rbx]    
-    mov [rsi], rbx
+    and ebx, 0xF0000000
+    shr ebx, 28
+
+    or ecx, ebx
+    test ecx, ecx
+    jz .skip_adding_to_buff
+
+    mov ebx, [symbols + ebx]
+
+    mov [rsi], ebx
     inc rsi
-    inc rcx
-skip_adding_to_buff:
+    inc ecx
+.skip_adding_to_buff:
 
     shl rax, 4
     dec edx
     cmp edx, 0
-    jne writeNum_loop
+    jne .writeNum_loop
 
-
-    ;inc rsi
+    inc rdi
     add rsp, 8
     cmp rsp, rbp
     jne .double_add
@@ -174,56 +175,10 @@ skip_adding_to_buff:
 
     jmp myprintf.process_format_string
 
-; print_hex:
-;     ; load number from stack
-;     mov rbx, 16
-;     mov rax, [rsp]
-;     mov r10, rsi
-
-; .convert_loop:
-;     cmp rax, 0
-;     je .convert_done
-;     xor rdx, rdx
-;     div 
-;     add rdx, 'A'
-;     mov [rsi], dl
-;     inc rsi
-;     jmp .convert_loop
-; .convert_done:
-
-;     mov rcx, r10
-;     mov r10, rsi
-;     dec rsi
-
-; .reverse_loop:
-;     cmp rcx, rsi
-;     jge .reverse_done
-;     mov al, byte [rcx]
-;     mov ah, byte [rsi]
-;     mov byte [rsi], al
-;     mov byte [rcx], ah
-;     inc rcx
-;     dec rsi
-;     jmp .reverse_loop
-; .reverse_done:
-;     mov rsi, r10
-
-;     ;xor rdx, rdx
-;     ; call print_num_recursive
-
-;     inc rdi
-    
-;     add rsp, 8
-;     cmp rsp, rbp
-;     jne .double_add
-;     add rsp, 16
-; .double_add:
-
-;     jmp myprintf.process_format_string
-
 ; |-----------------------------------------------------------------------------------|
-; | A proc that process %b (binary), %o (occtal) from format string                   |
+; | A proc that process %o (occtal) from format string                                |
 ; | Entry: rbp - stack frame,                                                         |
+; |        r8 - offset of stack frame,                                                |
 ; |        rsi - buffer,                                                              |
 ; |        rdi - format string                                                        |
 ; |        rbx - divisor of system                                                    |
@@ -231,44 +186,81 @@ skip_adding_to_buff:
 ; | Destr: RAX, RBX, RCX, RDX, r10                                                    |
 ; |-----------------------------------------------------------------------------------|
 
-print_bin_oct:
-    ; load number
+print_oct:
+    ; load number from stack
     mov rax, [rsp]
-    mov r10, rsi
+    mov edx, 11
+    xor ecx, ecx
 
-.convert_loop:
-    cmp rax, 0
-    je .convert_done
-    xor rdx, rdx
-    div rbx
-    add rdx, '0'
-    mov [rsi], dl
-    inc rsi
-    jmp .convert_loop
-.convert_done:
-    mov rcx, r10
-    mov r10, rsi
-    dec rsi
-
-    ; reverse number
-.reverse_loop:
-    cmp rcx, rsi
-    jge .reverse_done
-
-    mov al, byte [rcx]
-    mov ah, byte [rsi]
-    mov byte [rsi], al
-    mov byte [rcx], ah
-    inc rcx
-    dec rsi
-    jmp .reverse_loop
-.reverse_done:
-
-    mov rsi, r10
-    ;xor rdx, rdx
-    ; call print_num_recursive
-    inc rdi
+.writeNum_loop:
+    mov ebx, eax    ; number -> rbx
     
+    and ebx, 0xE0000000
+    shr ebx, 30
+
+    or ecx, ebx
+    test ecx, ecx
+    jz .skip_adding_to_buff
+
+    mov ebx, [symbols + ebx]
+
+    mov [rsi], ebx
+    inc rsi
+    inc ecx
+.skip_adding_to_buff:
+
+    shl rax, 3
+    dec edx
+    cmp edx, 0
+    jne .writeNum_loop
+
+    inc rdi
+    add rsp, 8
+    cmp rsp, rbp
+    jne .double_add
+    add rsp, 16
+.double_add:
+
+    jmp myprintf.process_format_string
+
+; |-----------------------------------------------------------------------------------|
+; | A proc that process %b (binary)                                                   |
+; | Entry: rbp - stack frame,                                                         |
+; |        rsi - buffer,                                                              |
+; |        rdi - format string                                                        |
+; |        rbx - divisor of system                                                    |
+; | Exit:  number in buffer                                                           |
+; | Destr: RAX, RBX, RCX, RDX, r10                                                    |
+; |-----------------------------------------------------------------------------------|
+print_bin:
+    ; load number from stack
+    mov rax, [rsp]
+    mov edx, 32
+    xor ecx, ecx
+
+.writeNum_loop:
+    mov ebx, eax    ; number -> rbx
+    
+    and ebx, 0x80000000
+    shr ebx, 31
+
+    or ecx, ebx
+    test ecx, ecx
+    jz .skip_adding_to_buff
+
+    mov ebx, [symbols + ebx]
+
+    mov [rsi], ebx
+    inc rsi
+    inc ecx
+.skip_adding_to_buff:
+
+    shl rax, 1
+    dec edx
+    cmp edx, 0
+    jne .writeNum_loop
+
+    inc rdi
     add rsp, 8
     cmp rsp, rbp
     jne .double_add
@@ -375,12 +367,14 @@ myprintf:
     jmp [rax]
     
 .set_bin:
-    mov rbx, 2
-    jmp print_bin_oct
+    ;mov rbx, 2
+    ;jmp print_bin_oct
+    jmp print_bin
 
 .set_oct:
-    mov rbx, 8
-    jmp print_bin_oct
+    ;mov rbx, 8
+    ;jmp print_bin_oct
+    jmp print_oct
 
 ; ------------------------------ myprintf.invalid_specifier ------------------------------
 ; If specifier is invalid, print error message and return EOF
