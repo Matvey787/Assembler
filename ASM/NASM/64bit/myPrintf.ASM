@@ -5,7 +5,10 @@
 section .data
     buffer db 500 dup(0)
     EOF equ -1
-    
+    symbols db "0123456789ABCDEF"
+
+
+
 section .text
 global myprintf
 ; !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -95,6 +98,7 @@ print_decimal:
     dec rsi
     jmp .reverse_loop
 .reverse_done:
+
     mov rsi, r10
 
     inc rdi
@@ -116,7 +120,7 @@ print_decimal:
 ; | Exit: % in buffer                                |
 ; | Destr: RAX, RBX, RCX, RDX, r10                   |
 ; |--------------------------------------------------|
-print_procent:
+print_percent:
     mov rax, [rdi]
     mov [rsi], rax
     inc rdi
@@ -133,45 +137,35 @@ print_procent:
 ; | Exit:  number in buffer                                                           |
 ; | Destr: RAX, RBX, RCX, RDX, r10                                                    |
 ; |-----------------------------------------------------------------------------------|
+
 print_hex:
     ; load number from stack
-    mov rbx, 16
     mov rax, [rsp]
-    mov r10, rsi
+    mov edx, 8
+    xor ecx, ecx
 
-.convert_loop:
-    cmp rax, 0
-    je .convert_done
-    xor rdx, rdx
-    div rbx
-    add rdx, 'A' - 10
-    mov [rsi], dl
-    inc rsi
-    jmp .convert_loop
-.convert_done:
-
-    mov rcx, r10
-    mov r10, rsi
-    dec rsi
-
-.reverse_loop:
-    cmp rcx, rsi
-    jge .reverse_done
-    mov al, byte [rcx]
-    mov ah, byte [rsi]
-    mov byte [rsi], al
-    mov byte [rcx], ah
-    inc rcx
-    dec rsi
-    jmp .reverse_loop
-.reverse_done:
-    mov rsi, r10
-
-    ;xor rdx, rdx
-    ; call print_num_recursive
-
-    inc rdi
+writeNum_loop:
+    mov rbx, rax    ; number -> rbx
     
+    convert_loop:
+    and rbx, 0xF000
+    or rcx, rbx
+    test rcx, rcx
+    jz skip_adding_to_buff
+
+    lea rbx, [symbols + rbx]    
+    mov [rsi], rbx
+    inc rsi
+    inc rcx
+skip_adding_to_buff:
+
+    shl rax, 4
+    dec edx
+    cmp edx, 0
+    jne writeNum_loop
+
+
+    ;inc rsi
     add rsp, 8
     cmp rsp, rbp
     jne .double_add
@@ -179,6 +173,53 @@ print_hex:
 .double_add:
 
     jmp myprintf.process_format_string
+
+; print_hex:
+;     ; load number from stack
+;     mov rbx, 16
+;     mov rax, [rsp]
+;     mov r10, rsi
+
+; .convert_loop:
+;     cmp rax, 0
+;     je .convert_done
+;     xor rdx, rdx
+;     div 
+;     add rdx, 'A'
+;     mov [rsi], dl
+;     inc rsi
+;     jmp .convert_loop
+; .convert_done:
+
+;     mov rcx, r10
+;     mov r10, rsi
+;     dec rsi
+
+; .reverse_loop:
+;     cmp rcx, rsi
+;     jge .reverse_done
+;     mov al, byte [rcx]
+;     mov ah, byte [rsi]
+;     mov byte [rsi], al
+;     mov byte [rcx], ah
+;     inc rcx
+;     dec rsi
+;     jmp .reverse_loop
+; .reverse_done:
+;     mov rsi, r10
+
+;     ;xor rdx, rdx
+;     ; call print_num_recursive
+
+;     inc rdi
+    
+;     add rsp, 8
+;     cmp rsp, rbp
+;     jne .double_add
+;     add rsp, 16
+; .double_add:
+
+;     jmp myprintf.process_format_string
 
 ; |-----------------------------------------------------------------------------------|
 ; | A proc that process %b (binary), %o (occtal) from format string                   |
@@ -213,7 +254,7 @@ print_bin_oct:
 .reverse_loop:
     cmp rcx, rsi
     jge .reverse_done
-    ; exchange
+
     mov al, byte [rcx]
     mov ah, byte [rsi]
     mov byte [rsi], al
@@ -222,11 +263,10 @@ print_bin_oct:
     dec rsi
     jmp .reverse_loop
 .reverse_done:
-    mov rsi, r10
 
+    mov rsi, r10
     ;xor rdx, rdx
     ; call print_num_recursive
-
     inc rdi
     
     add rsp, 8
@@ -377,15 +417,15 @@ myprintf:
 
 section .data
     jmp_table:
-        dq print_procent
-        times 60 dq myprintf.invalid_specifier
+        dq print_percent
+        times 'b' - '%' - 1 dq myprintf.invalid_specifier
         dq myprintf.set_bin
         dq print_char
         dq print_decimal
-        times 10 dq myprintf.invalid_specifier
+        times 'o' - 'd' - 1 dq myprintf.invalid_specifier
         dq myprintf.set_oct
-        times 3 dq myprintf.invalid_specifier
+        times 's' - 'o' - 1 dq myprintf.invalid_specifier
         dq print_string
-        times 4 dq myprintf.invalid_specifier
+        times 'x' - 's' - 1 dq myprintf.invalid_specifier
         dq print_hex
         times 12 dq myprintf.invalid_specifier
