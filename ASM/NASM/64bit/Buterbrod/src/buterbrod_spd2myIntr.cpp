@@ -88,8 +88,6 @@ int main()
 
                 double x0_single = (double)x * k_x + offsetX;
                 double y0_single = (double)y * k_y  + offsetY;
-                
-                const int max_iteration = 100;
 
                 double X0[4] = {x0_single, 
                                 x0_single + 1 * k_x,
@@ -116,7 +114,7 @@ int main()
                     unsigned int cmp[4] = {};
                     // for (int i = 0; i < 4; i++) cmp[i] = (r2[i] <= 4);
 
-                    mm_cmple_ps(cmp, r2, с_maxRadius);
+                    mm_cmple_ps(cmp, r2, c_maxRadius);
 
                     bool is_out = true;
                     for (int i = 0; i < 4; i++) {

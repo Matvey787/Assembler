@@ -26,41 +26,44 @@ int main()
         sf::Event event;
         while (window.pollEvent(event)) 
         {
-            if (event.type == sf::Event::Closed) 
+            if (event.type == sf::Event::Closed)
+            {
                 window.close();
-                if (event.type == sf::Event::KeyPressed) {
-                    switch (event.key.code) {
-                    {
-                    case sf::Keyboard::Up:
-                        offsetY += 0.1;
-                        break;
-                    case sf::Keyboard::Down:
-                        offsetY -= 0.1;
-                        break;
-                    case sf::Keyboard::Right:
-                        offsetX += 0.1;
-                        break;
-                    case sf::Keyboard::Left:
-                        offsetX -= 0.1;
-                        break;
-                    
-                    case sf::Keyboard::Equal:
-                        if (event.key.control) {
-                            zoomX *= 0.9;
-                            zoomY *= 0.9;
-                        }
-                        break;
-                    case sf::Keyboard::Hyphen:
-                        if (event.key.control) {
-                            zoomX *= 1.1;
-                            zoomY *= 1.1;
-                        }
-                        break;
-
-
-                    default:
-                        break;
+            }
+                
+            if (event.type == sf::Event::KeyPressed) 
+            {
+                switch (event.key.code) 
+                {
+                case sf::Keyboard::Up:
+                    offsetY += 0.1;
+                    break;
+                case sf::Keyboard::Down:
+                    offsetY -= 0.1;
+                    break;
+                case sf::Keyboard::Right:
+                    offsetX += 0.1;
+                    break;
+                case sf::Keyboard::Left:
+                    offsetX -= 0.1;
+                    break;
+                
+                case sf::Keyboard::Equal:
+                    if (event.key.control) {
+                        zoomX *= 0.9;
+                        zoomY *= 0.9;
                     }
+                    break;
+                case sf::Keyboard::Hyphen:
+                    if (event.key.control) {
+                        zoomX *= 1.1;
+                        zoomY *= 1.1;
+                    }
+                    break;
+
+
+                default:
+                    break;
                 }
             }
         }

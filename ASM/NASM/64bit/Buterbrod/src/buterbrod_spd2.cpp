@@ -120,6 +120,12 @@ int main()
                         buffer.setPixel(x + i, y, sf::Color(r, g, b));
                     }
                 }
+
+                // for (unsigned int i = 0; i < 4; i++)
+                // {
+                //     sf::Color color(N[i], N[i], N[i]);
+                //     buffer.setPixel(x + i, y, color);
+                // }
             }
         }
 

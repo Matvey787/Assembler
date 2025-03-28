@@ -86,7 +86,7 @@ int main()
                 int N[4] = {0, 0, 0, 0};
                 for (int n = 0; n < max_iteration; n++) 
                 {
-                    int mask = 0;
+                    bool is_out = false;
                     for (int i = 0; i < 4; i++) {
                         double x2 = X[i] * X[i];
                         double y2 = Y[i] * Y[i];
@@ -96,14 +96,19 @@ int main()
                             double xy = X[i] * Y[i];
                             X[i] = x2 - y2 + X0[i];
                             Y[i] = xy + xy + Y0[i];
-                            mask |= (1 << i);
+                        }
+                        else 
+                        {
+                            is_out = true;
+                            break;
                         }
                     }
-                    if (!mask) break;
+                    if (is_out) break;
+                    
 
                     for (int i = 0; i < 4; i++)
                     {
-                        int iteration = N[i];
+                    int iteration = N[i];
                         if (iteration == max_iteration)
                         {
                             buffer.setPixel(x + i, y, sf::Color::Black);
