@@ -8,7 +8,8 @@
         "optional": "cpp",
         "variant": "cpp",
         "*.tcc": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "cstdlib": "cpp"
     },
     "Codegeex.CommitMessage.LanguagePreference": "English",
     "Codegeex.Chat.LanguagePreference": "English"
