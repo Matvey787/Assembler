@@ -207,6 +207,7 @@ You can see specificators in the table below:
 #### Mandelbrot
 
   ![Mandelbrot](ASM/NASM/64bit/Buterbrod/imgs/Mandelbrot.png)  
+  
   To see the description of the program, see [repo](ASM/NASM/64bit/Buterbrod/).
   
 ### 32-bit
