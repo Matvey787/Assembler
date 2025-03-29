@@ -53,6 +53,7 @@ The table below lists the main AVX functions employed in the code:
 | `_mm_add_epi32`            | `__m128i a, __m128i b`                      | `__m128i`               | Adds 4 pairs of `int` values element-wise             |
 | `_mm_storeu_si128`         | `__m128i* mem_addr, __m128i a`              | `void`                  | Stores 4 `int` values from a register into memory     |
 
-These functions enable simultaneous computation on 4 points of the Mandelbrot set, significantly improving performance compared to sequential operations.
+- __m256d for 256-bit AVX registers holding 4 double values.  
+- __m128i for 128-bit SSE registers holding 4 int values.  
 
 These functions enable simultaneous computation on 4 points of the Mandelbrot set, significantly improving performance compared to sequential operations.
