@@ -19,7 +19,7 @@ intrinsics library `<immintrin.h>`.
 Distribution: `Ubuntu 14.2.0`  
 Linux version: `Linux version 6.11.0`  
 CPU: `Intel Core i5 9300H (2.40 GHz)`  
-> NOTE
+> ![NOTE]
 > The speed of the program is measured in fps (frames per second).
 
 | Compiler Flags       | Naive Version | First Version | Vectorized (`no real AVX`, `4×1`) | Vectorized (`no real AVX`, `7×1`) | Vectorized (`real AVX`) |
