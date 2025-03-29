@@ -3,13 +3,14 @@
 #include <SFML/Graphics.hpp>
 #include <cstdlib>
 #include <cmath>
+#include <cstring>
 #include <immintrin.h>
 
 inline void mm_add_epi32(unsigned int mm[4], const unsigned int mm2[4]) 
     { for (int i = 0; i < 4; i++) mm[i] += mm2[i]; }
 
 void getEventFromUser(double* zoomX, double* zoomY, double* offsetX, double* offsetY,
-                      sf::RenderWindow* window);
+        sf::RenderWindow* window, bool graphicsEnabled);
 
 void initCoordinates(double X0[4], __m256d* X_vec, __m256d* Y_vec, double x0_single, double y0_single, double k_x);
 
@@ -18,9 +19,19 @@ void iterateMandelbrot(__m256d* X_vec, __m256d* Y_vec, const __m256d X0_vec, con
 
 void setPixels(sf::Image* buffer, size_t x, size_t y, const unsigned int N[4], int max_iteration);
 
-int main()
+int main(int argc, char* argv[])
 {
-    sf::RenderWindow window(sf::VideoMode(C_SCREEN_WIDTH, C_SCREEN_HEIGHT), "Buterbrod_opt1");
+    bool graphicsEnabled = false;
+    if (strcmp(argv[argc-1], "--onGr") == 0) 
+    {
+        graphicsEnabled = true;
+    }
+    else if (strcmp(argv[argc-1], "--offGr") == 0)
+    {
+        graphicsEnabled = false;
+    }
+
+    sf::RenderWindow window(sf::VideoMode(C_SCREEN_WIDTH, C_SCREEN_HEIGHT), "Buterbrod");
     sf::Image buffer;
     buffer.create(C_SCREEN_WIDTH, C_SCREEN_HEIGHT, sf::Color::Black);
     sf::Texture texture;
@@ -37,9 +48,12 @@ int main()
 
     while (window.isOpen()) 
     {
-        getEventFromUser(&zoomX, &zoomY, &offsetX, &offsetY, &window);
+        getEventFromUser(&zoomX, &zoomY, &offsetX, &offsetY, &window, graphicsEnabled);
 
-        buffer.create(C_SCREEN_WIDTH, C_SCREEN_HEIGHT, sf::Color::Black);
+        if (graphicsEnabled)
+        {
+            buffer.create(C_SCREEN_WIDTH, C_SCREEN_HEIGHT, sf::Color::Black);
+        }
 
         for (size_t y = 0; y < C_SCREEN_HEIGHT; y++) {
             for (size_t x = 0; x < C_SCREEN_WIDTH; x += 4) {
@@ -59,9 +73,11 @@ int main()
                 setPixels(&buffer, x, y, N, max_iteration);
             }
         }
-
-        texture.loadFromImage(buffer);
-        bufferSprite.setTexture(texture);
+        if (graphicsEnabled)
+        {
+            texture.loadFromImage(buffer);
+            bufferSprite.setTexture(texture);
+        }
 
         frameCount++;
         float currentTime = clock.getElapsedTime().asSeconds();
@@ -73,8 +89,11 @@ int main()
         }
 
         window.clear();
+        if (graphicsEnabled)
+        {
         window.draw(bufferSprite);
         window.display();
+        }
     }
 
     return 0;
@@ -158,14 +177,15 @@ void setPixels(sf::Image* buffer, size_t x, size_t y, const unsigned int N[4], i
 }
 
 void getEventFromUser(double* zoomX, double* zoomY, double* offsetX, double* offsetY,
-                      sf::RenderWindow* window)
+                      sf::RenderWindow* window, bool graphicsEnabled)
 {
     sf::Event event;
     while ((*window).pollEvent(event)) 
     {
         if (event.type == sf::Event::Closed) 
             (*window).close();
-        if (event.type == sf::Event::KeyPressed) 
+
+        if (graphicsEnabled && event.type == sf::Event::KeyPressed) 
         {
             switch (event.key.code) {
                 case sf::Keyboard::Up:

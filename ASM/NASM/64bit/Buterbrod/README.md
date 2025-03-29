@@ -30,3 +30,30 @@ CPU: `Intel Core i5 9300H (2.40 GHz)`
 | `clang++ -O3`       | 22            | 53            | 58-60                            | 81                               | 60                     |
 
 ![Diagram](imgs/fpsDiagram.svg)
+
+## AVX functions used in the project
+
+> [!Note]
+> You need the `-mavx` flag to make it work.
+
+AVX (Advanced Vector Extensions) is a set of instructions for x86/x86-64 processors that enables
+ parallel computations on multiple data points simultaneously (SIMD — Single Instruction, Multiple
+ Data). In this program, AVX is utilized to accelerate Mandelbrot set calculations by processing 4
+  `double` values in a single operation.
+
+The table below lists the main AVX functions employed in the code:
+
+| AVX Function Name          | AVX Function Parameters                      | Brief Description of What It Does                     |
+|----------------------------|---------------------------------------------|-------------------------------------------------------|
+| `_mm256_loadu_pd`          | `const double* ptr`                         | Loads 4 `double` values from memory into an AVX register |
+| `_mm256_set1_pd`           | `double a`                                  | Creates an AVX register with 4 copies of a single value |
+| `_mm256_mul_pd`            | `__m256d a, __m256d b`                      | Multiplies 4 pairs of `double` values element-wise    |
+| `_mm256_add_pd`            | `__m256d a, __m256d b`                      | Adds 4 pairs of `double` values element-wise          |
+| `_mm256_sub_pd`            | `__m256d a, __m256d b`                      | Subtracts 4 pairs of `double` values element-wise     |
+| `_mm256_cmp_pd`            | `__m256d a, __m256d b, int imm8`            | Compares 4 pairs of `double` values (here, <=)        |
+| `_mm256_movemask_pd`       | `__m256d a`                                 | Converts comparison results into a bit mask           |
+| `_mm_loadu_si128`          | `__m128i const* mem_addr`                   | Loads 4 `int` values into an SSE register             |
+| `_mm_add_epi32`            | `__m128i a, __m128i b`                      | Adds 4 pairs of `int` values element-wise             |
+| `_mm_storeu_si128`         | `__m128i* mem_addr, __m128i a`              | Stores 4 `int` values from a register into memory     |
+
+These functions enable simultaneous computation on 4 points of the Mandelbrot set, significantly improving performance compared to sequential operations.
