@@ -6,12 +6,12 @@ The Mandelbrot project was created to show how much you can influence code optim
 help of different optimizations, in particular, vectorization is realized here.  
 The project consists of three parts:  
 
-1. A naive [version](buterbrod_spd0.cpp) of Mandelbrot set drawing.
-2. The [first version](buterbrod_spd1.cpp) of the vectorization implementation.
-3. The [second version](buterbrod_spd2.0.cpp) or another [second version](buterbrod_spd2myIntr.cpp)  
+1. A naive [version](src/buterbrod_spd0.cpp) of Mandelbrot set drawing.
+2. The [first version](src/buterbrod_spd1.cpp) of the vectorization implementation.
+3. The [second version](src/buterbrod_spd2.0.cpp) or another [second version](src/buterbrod_spd2myIntr.cpp)  
 with my inline intrinsics of the vectorization implementation, sweep factor 4×1.
-4. The [third version](buterbrod_spd2.1.cpp) of the vectorization implementation, sweep factor 7×1.
-5. The [final version](buterbrod_spd2trueIntr.cpp) of the vectorization implementation with real  
+4. The [third version](src/buterbrod_spd2.1.cpp) of the vectorization implementation, sweep factor 7×1.
+5. The [final version](src/buterbrod_spd3trueIntr.cpp) of the vectorization implementation with real  
 intrinsics library `<immintrin.h>`.
 
 ## Speed

@@ -189,7 +189,7 @@ It also works in every case. Cool!!!
 
 #### My printf function
 
-[Printf](ASM/NASM/64bit/myPrintf.ASM) is one of the popular C functions rewritten by me.
+[Printf](ASM/NASM/64bit/myPrintf/myPrintf.ASM) is one of the popular C functions rewritten by me.
 You can see specificators in the table below:
 
 | Specificator | Input                  | Output               |
@@ -204,6 +204,11 @@ You can see specificators in the table below:
 >[!NOTE]
 > `%%` also supported  
 
+#### Mandelbrot
+
+  ![Mandelbrot](ASM/NASM/64bit/Buterbrod/imgs/Mandelbrot.png)
+  To see the description of the program, see [repo](ASM/NASM/64bit/Buterbrod/).
+  
 ### 32-bit
 
 #### Repeat
