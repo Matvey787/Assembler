@@ -48,7 +48,7 @@ The table below lists the main AVX functions employed in the code:
 | `_mm256_add_pd`            | `__m256d a, __m256d b`                      | `__m256d`               | Adds 4 pairs of `double` values element-wise          |
 | `_mm256_sub_pd`            | `__m256d a, __m256d b`                      | `__m256d`               | Subtracts 4 pairs of `double` values element-wise     |
 | `_mm256_cmp_pd`            | `__m256d a, __m256d b, int imm8`            | `__m256d`               | Compares 4 pairs of `double` values (here, <=)        |
-| `_mm256_movemask_pd`       | `__m256d a`                                 | `int`                   | Converts comparison results into a bit mask           |
+| `_mm256_movemask_pd`       | `__m256d a`                                 | `scalar bit mask (int)` | Converts comparison results into a bit mask           |
 | `_mm_loadu_si128`          | `__m128i const* mem_addr`                   | `__m128i`               | Loads 4 `int` values into an SSE register             |
 | `_mm_add_epi32`            | `__m128i a, __m128i b`                      | `__m128i`               | Adds 4 pairs of `int` values element-wise             |
 | `_mm_storeu_si128`         | `__m128i* mem_addr, __m128i a`              | `void`                  | Stores 4 `int` values from a register into memory     |
