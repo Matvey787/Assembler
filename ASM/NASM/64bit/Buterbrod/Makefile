@@ -6,7 +6,7 @@ CXXFLAGS = -I inc -mavx -D _DEBUG -std=c++17 -O3 -Wall -Wextra -Weffc++         
 
 # -Wfloat-equal 
 # Object files
-OBJECTS = obj/buterbrod_spd2trueIntr.o
+OBJECTS = obj/buterbrod_spd2.1.o
 
 # Default target
 all: init out

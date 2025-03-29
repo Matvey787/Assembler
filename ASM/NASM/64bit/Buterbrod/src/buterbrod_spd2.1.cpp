@@ -48,38 +48,51 @@ int main()
         buffer.create(C_SCREEN_WIDTH, C_SCREEN_HEIGHT, sf::Color::Black);
 
         for (size_t y = 0; y < C_SCREEN_HEIGHT; y++) {
-            for (size_t x = 0; x < C_SCREEN_WIDTH; x += 4) {
+            for (size_t x = 0; x < C_SCREEN_WIDTH; x += 7) {
                 const double k_x = zoomX / (double)C_SCREEN_WIDTH;
                 const double k_y = zoomY / (double)C_SCREEN_HEIGHT;
-                const double x0_single = (double)x * k_x + offsetX;
-                const double y0_single = (double)y * k_y + offsetY;
+
+                double x0_single = (double)x * k_x + offsetX;
+                double y0_single = (double)y * k_y + offsetY;
+                
                 const int max_iteration = 100;
 
-                double X0[4] = {x0_single, x0_single + k_x, x0_single + 2 * k_x, x0_single + 3 * k_x};
-                double X[4] = {X0[0], X0[1], X0[2], X0[3]};
-                double Y[4] = {y0_single, y0_single, y0_single, y0_single};
-                unsigned int N[4] = {0, 0, 0, 0};
+                double X0[7] = {x0_single,
+                               x0_single + 1 * k_x,
+                               x0_single + 2 * k_x,
+                               x0_single + 3 * k_x,
+                               x0_single + 4 * k_x,
+                               x0_single + 5 * k_x,
+                               x0_single + 6 * k_x};
 
+                double X[7] = {}; for (int i = 0; i < 7; i++) X[i] = X0[i];
+                double Y[7] = {}; for (int i = 0; i < 7; i++) Y[i] = y0_single;
+
+                unsigned int N[7] = {0, 0, 0, 0, 0, 0, 0};
                 for (unsigned int n = 0; n < max_iteration; n++) 
                 {
+                    double x2[7] = {}; for (int i = 0; i < 7; i++) x2[i] = X[i] * X[i];
+                    double y2[7] = {}; for (int i = 0; i < 7; i++) y2[i] = Y[i] * Y[i];
+                    double xy[7] = {}; for (int i = 0; i < 7; i++) xy[i] = X[i] * Y[i];
+                    double r2[7] = {}; for (int i = 0; i < 7; i++) r2[i] = x2[i] + y2[i];
+
+                    unsigned int cmp[7] = {};
+                    for (int i = 0; i < 7; i++) cmp[i] = (r2[i] <= 4);
+
                     bool is_out = true;
-                    for (int i = 0; i < 4; i++) {
-                        double x2 = X[i] * X[i];
-                        double y2 = Y[i] * Y[i];
-                        double r2 = x2 + y2;
-                        
-                        if (r2 <= 4) {
+                    for (int i = 0; i < 7; i++) {
+                        if (cmp[i]) 
                             is_out = false;
-                            N[i]++;
-                            double xy = X[i] * Y[i];
-                            X[i] = x2 - y2 + X0[i];
-                            Y[i] = xy + xy + y0_single;
-                        }
                     }
                     if (is_out) break;
+
+                    for (int i = 0; i < 7; i++) N[i] += cmp[i];
+
+                    for (int i = 0; i < 7; i++) X[i] = x2[i] - y2[i] + X0[i];
+                    for (int i = 0; i < 7; i++) Y[i] = xy[i] + xy[i] + y0_single;
                 }
                 
-                for (int i = 0; i < 4; i++)
+                for (int i = 0; i < 7 && (x + i) < C_SCREEN_WIDTH; i++)
                 {
                     int iteration = N[i];
                     if (iteration == max_iteration)
