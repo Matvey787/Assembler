@@ -22,9 +22,9 @@ CPU: `Intel Core i5 9300H (2.40 GHz)`
 > NOTE
 > The speed of the program is measured in fps (frames per second).
 
-|                      | Naive version | First version | Vectorized version (`no real AVX`, `4×1`) |
- Vectorized version (`no real AVX`, `7×1`) | Vectorized version (`real AVX`) |
-| `g++ -O2`     | 22-23 | 39    | 52-53 | 17 | 59-60 |
-| `g++ -O3`     | 23    | 50-51 | 47-48 | 42 | 60-61 |
-| `clang++ -O2` | 21-22 | 53    | 59-60 | 78-79 | 60-61 |
-| `clang++ -O3` | 22    | 53    | 58-60 | 81 | 60    |
+| Compiler Flags       | Naive Version | First Version | Vectorized (`no real AVX`, `4×1`) | Vectorized (`no real AVX`, `7×1`) | Vectorized (`real AVX`) |
+|----------------------|---------------|---------------|----------------------------------|----------------------------------|------------------------|
+| `g++ -O2`           | 22-23         | 39            | 52-53                            | 17                               | 59-60                  |
+| `g++ -O3`           | 23            | 50-51         | 47-48                            | 42                               | 60-61                  |
+| `clang++ -O2`       | 21-22         | 53            | 59-60                            | 78-79                            | 60-61                  |
+| `clang++ -O3`       | 22            | 53            | 58-60                            | 81                               | 60                     |
