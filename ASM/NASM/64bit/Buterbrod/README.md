@@ -16,7 +16,7 @@ intrinsics library `<immintrin.h>`.
 
 ## Speed
 
-Distribution: `Ubuntu 14.2.0`  
+Distribution: `Ubuntu 24.10`
 Linux version: `Linux version 6.11.0`  
 CPU: `Intel Core i5 9300H (2.40 GHz)`  
 > [!NOTE]
@@ -30,6 +30,20 @@ CPU: `Intel Core i5 9300H (2.40 GHz)`
 | `clang++ -O3`       | 22            | 53            | 58-60                            | 81                               | 60                     |
 
 ![Diagram](imgs/fpsDiagram.svg)
+
+Distribution: `Ubuntu 24.10.0`  
+Linux version: `Linux version 6.11.0`  
+CPU: `Ryzen 9 5900H (4.60 GHz)`
+
+| Compiler Flags       | Naive Version | First Version | Vectorized (`no real AVX`, `4×1`) | Vectorized (`no real AVX`, `7×1`) | Vectorized (`real AVX`) |
+|----------------------|---------------|---------------|----------------------------------|----------------------------------|------------------------|
+| `g++ -O2`           | 35         | 52-53            |  84-86                        | 26                                | 86-87                  |
+| `g++ -O3`           | 35            | 75        | 61-62                             | 57-58                         | 89-90                  |
+| `clang++ -O2`       | 33-34         | 79-80            | 88-89                      | 106-107                            | 93                  |
+| `clang++ -O3`       | 34            | 79-80            | 88-89                      | 107                                | 91                     |
+
+> [!NOTE]
+> The speed of the program is measured in fps (frames per second).
 
 ## AVX functions used in the project
 
