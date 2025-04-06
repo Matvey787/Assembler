@@ -67,9 +67,6 @@ CPU: `Ryzen 9 5900H (4.60 GHz)`
 | `clang++ -O2`       | 33-34         | 79-80            | 88-89                      | 106-107                            | 93                     |
 | `clang++ -O3`       | 34            | 79-80            | 88-89                      | 107                                | 91                     |
 
-> [!NOTE]
-> The speed of the program is measured in fps (frames per second).
-
 ### Profiler
 
 Сpu ticks were measured using a simple profiler written by me to quickly calculate cpu ticks and the random error of the measured value as of the variance of the deviation.
