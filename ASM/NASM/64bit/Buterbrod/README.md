@@ -16,9 +16,9 @@ intrinsics library `<immintrin.h>`.
 
 ## Speed
 
-Distribution: `Ubuntu 24.10`
-Linux version: `Linux version 6.11.0`
-CPU: `Intel Core i5 9300H (2.40 GHz)`
+Distribution: `Ubuntu 24.10`  
+Linux version: `Linux version 6.11.0`  
+CPU: `Intel Core i5 9300H (2.40 GHz)`  
 
 ### CPU ticks (compiler & prog version)
 
