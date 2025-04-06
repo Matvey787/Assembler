@@ -1,4 +1,15 @@
-# Mandelbrot
+# Mandelbrot Set Optimization Project
+
+## Table of Contents
+
+1. [Description](#description)
+2. [Execution speed](#execution-speed)
+   - [CPU ticks (compiler & prog versions)](#cpu-ticks-compiler--prog-versions)
+   - [FPS (compiler & prog versions)](#fps-compiler--prog-versions)
+3. [Profiler](#profiler)
+4. [AVX acceleration](#avx-acceleration)
+   - [How it works](#how-it-works)
+   - [Intel AVX functions used in the project](#intel-avx-functions-used-in-the-project)
 
 ## Description
 
@@ -14,13 +25,9 @@ with my inline intrinsics of the vectorization implementation, sweep factor 4×1
 5. The [final version](src/buterbrod_spd3trueIntr.cpp) of the vectorization implementation with real  
 intrinsics library `<immintrin.h>`.
 
-## Speed
+## Execution speed
 
-Distribution: `Ubuntu 24.10`  
-Linux version: `Linux version 6.11.0`  
-CPU: `Intel Core i5 9300H (2.40 GHz)`  
-
-### CPU ticks (compiler & prog version)
+### CPU ticks (compiler & prog versions)
 
 Table shows `CPU ticks * 10^6` for each version of the program with different compilators.
 
@@ -33,10 +40,14 @@ Table shows `CPU ticks * 10^6` for each version of the program with different co
 
 ![Diagram](imgs/cpuTicksDiagram.svg)
 
-### FPS (compiler & prog version)
+### FPS (compiler & prog versions)
 
 > [!NOTE]
 > The speed of the program is measured in fps (frames per second).
+
+Distribution: `Ubuntu 24.10`  
+Linux version: `Linux version 6.11.0`  
+CPU: `Intel Core i5 9300H (2.40 GHz)`  
 
 | Compiler Flags       | Naive Version | First Version | Vectorized (`no real AVX`, `4×1`) | Vectorized (`no real AVX`, `7×1`) | Vectorized (`real AVX`) |
 |----------------------|---------------|---------------|----------------------------------|----------------------------------|------------------------|
@@ -46,9 +57,7 @@ Table shows `CPU ticks * 10^6` for each version of the program with different co
 | `clang++ -O3`       | 22            | 53            | 58-60                            | 81                               | 60                     |
 
 ![Diagram](imgs/fpsDiagram.svg)
-
-Distribution: `Ubuntu 24.10.0`  
-Linux version: `Linux version 6.11.0`  
+  
 CPU: `Ryzen 9 5900H (4.60 GHz)`
 
 | Compiler Flags       | Naive Version | First Version | Vectorized (`no real AVX`, `4×1`) | Vectorized (`no real AVX`, `7×1`) | Vectorized (`real AVX`) |
@@ -61,7 +70,7 @@ CPU: `Ryzen 9 5900H (4.60 GHz)`
 > [!NOTE]
 > The speed of the program is measured in fps (frames per second).
 
-## 
+### Profiler
 
 Сpu ticks were measured using a simple profiler written by me to quickly calculate cpu ticks and the random error of the measured value as of the variance of the deviation.
 
