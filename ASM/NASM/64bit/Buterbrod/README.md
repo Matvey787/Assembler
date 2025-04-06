@@ -123,7 +123,7 @@ AVX (Advanced Vector Extensions) is a set of instructions for x86/x86-64 process
 
 ### How it works
 
-We reduce the number of iterations by sweeping cycles in a single iteration. We work with 4 points on the x-axis at once. This reduces the number of iterations from 600*800 = 480000 to 600*200 = 120000, which significantly improves the performance of the program.
+We reduce the number of iterations by sweeping cycles in a single iteration. We work with 4 points on the x-axis at once. This reduces the number of iterations from 600\*800 = 480000 to 600\*200 = 120000, which significantly improves the performance of the program.
 
 ![fastInit](imgs/fastInit.svg)
 ![cycleSweep](imgs/cycleSweep.svg)
