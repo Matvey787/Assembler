@@ -6,11 +6,31 @@
 #include <cstring>
 #include <immintrin.h>
 
+#ifdef ON_STAT
+    #include "profiler.h"
+    #define PROFILE_START_(name) profileStart(name);
+    #define PROFILE_END_(name) profileEnd(name);
+    #define PROFILE_SET_LIMIT_(limit) setProfileLimit(limit);
+    #define PROFILE_INFO_ printStats();
+#else
+    #define PROFILE_START_(name)
+    #define PROFILE_END_(name)
+    #define PROFILE_SET_LIMIT_(limit)
+    #define PROFILE_INFO_
+#endif
+
+struct screenData
+{
+    double offsetX;
+    double offsetY;
+    double zoomX;
+    double zoomY;
+};
+
 inline void mm_add_epi32(unsigned int mm[4], const unsigned int mm2[4]) 
     { for (int i = 0; i < 4; i++) mm[i] += mm2[i]; }
 
-void getEventFromUser(double* zoomX, double* zoomY, double* offsetX, double* offsetY,
-        sf::RenderWindow* window, bool graphicsEnabled);
+void getEventFromUser(screenData* screen, sf::RenderWindow* window, bool graphicsEnabled);
 
 void initCoordinates(double X0[4], __m256d* X_vec, __m256d* Y_vec, double x0_single, double y0_single, double k_x);
 
@@ -19,8 +39,11 @@ void iterateMandelbrot(__m256d* X_vec, __m256d* Y_vec, const __m256d X0_vec, con
 
 void setPixels(sf::Image* buffer, size_t x, size_t y, const unsigned int N[4], int max_iteration);
 
+void countPixels(screenData* screen, sf::Image* buffer);
+
 int main(int argc, char* argv[])
 {
+    PROFILE_SET_LIMIT_(1000);
     bool graphicsEnabled = false;
     if (strcmp(argv[argc-1], "--onGr") == 0) 
     {
@@ -37,66 +60,73 @@ int main(int argc, char* argv[])
     sf::Texture texture;
     sf::Sprite bufferSprite;
 
-    sf::Clock clock;
-    float lastTime = 0.f;
-    int frameCount = 0;
+    //unsigned long long lastTicks = __rdtsc();
+    screenData screen;
+    screen.offsetX = -2.5;
+    screen.offsetY = 1;
+    screen.zoomX = 3.5;
+    screen.zoomY = -2.0;
 
-    double offsetX = -2.5;
-    double offsetY = 1;
-    double zoomX = 3.5;
-    double zoomY = -2.0;
-
-    while (window.isOpen()) 
+    size_t counter = 0;
+    while (window.isOpen())
     {
-        getEventFromUser(&zoomX, &zoomY, &offsetX, &offsetY, &window, graphicsEnabled);
+        getEventFromUser(&screen, &window, graphicsEnabled);
 
         if (graphicsEnabled)
         {
             buffer.create(C_SCREEN_WIDTH, C_SCREEN_HEIGHT, sf::Color::Black);
         }
 
-        for (size_t y = 0; y < C_SCREEN_HEIGHT; y++) {
-            for (size_t x = 0; x < C_SCREEN_WIDTH; x += 4) {
-                const double k_x = zoomX / (double)C_SCREEN_WIDTH;
-                const double k_y = zoomY / (double)C_SCREEN_HEIGHT;
+        countPixels(&screen, &buffer);
 
-                double x0_single = (double)x * k_x + offsetX;
-                double y0_single = (double)y * k_y + offsetY;
-
-                double X0[4];
-                __m256d X_vec, Y_vec;
-                initCoordinates(X0, &X_vec, &Y_vec, x0_single, y0_single, k_x);
-
-                unsigned int N[4] = {0, 0, 0, 0};
-                iterateMandelbrot(&X_vec, &Y_vec, _mm256_loadu_pd(X0), Y_vec, N, max_iteration, c_maxRadius);
-
-                setPixels(&buffer, x, y, N, max_iteration);
-            }
-        }
         if (graphicsEnabled)
         {
             texture.loadFromImage(buffer);
             bufferSprite.setTexture(texture);
         }
 
-        frameCount++;
-        float currentTime = clock.getElapsedTime().asSeconds();
-        if (currentTime - lastTime >= 1.f) {
-            float fps = frameCount / (currentTime - lastTime);
-            printf("FPS: %.0f\n", fps);
-            frameCount = 0;
-            lastTime = currentTime;
-        }
-
         window.clear();
         if (graphicsEnabled)
         {
-        window.draw(bufferSprite);
-        window.display();
+            window.draw(bufferSprite);
+            window.display();
+        }
+        
+        counter += 1;
+    }
+    PROFILE_INFO_
+    return 0;
+}
+
+void countPixels(screenData* screen, sf::Image* buffer)
+{
+    double offsetX = screen->offsetX;
+    double offsetY = screen->offsetY;
+    double zoomX = screen->zoomX;
+    double zoomY = screen->zoomY;
+
+    PROFILE_START_("cntPxls")
+    for (size_t y = 0; y < C_SCREEN_HEIGHT; y++)
+    {
+        for (size_t x = 0; x < C_SCREEN_WIDTH; x += 4)
+        {
+            const double k_x = zoomX / (double)C_SCREEN_WIDTH;
+            const double k_y = zoomY / (double)C_SCREEN_HEIGHT;
+
+            double x0_single = (double)x * k_x + offsetX;
+            double y0_single = (double)y * k_y + offsetY;
+
+            double X0[4];
+            __m256d X_vec, Y_vec;
+            initCoordinates(X0, &X_vec, &Y_vec, x0_single, y0_single, k_x);
+
+            unsigned int N[4] = {0, 0, 0, 0};
+            iterateMandelbrot(&X_vec, &Y_vec, _mm256_loadu_pd(X0), Y_vec, N, max_iteration, c_maxRadius);
+
+            setPixels(buffer, x, y, N, max_iteration);
         }
     }
-
-    return 0;
+    PROFILE_END_("cntPxls")
 }
 
 void initCoordinates(double X0[4], __m256d* X_vec, __m256d* Y_vec, double x0_single, double y0_single, double k_x)
@@ -106,9 +136,7 @@ void initCoordinates(double X0[4], __m256d* X_vec, __m256d* Y_vec, double x0_sin
     X0[2] = x0_single + 2 * k_x;
     X0[3] = x0_single + 3 * k_x;
 
-    // X_vec = [X0[0], X0[1], X0[2], X0[3]]
     *X_vec = _mm256_loadu_pd(X0);
-    // Y_vec = [y0_single, y0_single, y0_single, y0_single]
     *Y_vec = _mm256_set1_pd(y0_single);
 }
 
@@ -117,19 +145,11 @@ void iterateMandelbrot(__m256d* X_vec, __m256d* Y_vec, const __m256d X0_vec, con
 {
     for (unsigned int n = 0; n < max_iteration; n++) 
     {
-        // count x2[4]
         __m256d X2_vec = _mm256_mul_pd(*X_vec, *X_vec);
-
-        // count y2[4]
         __m256d Y2_vec = _mm256_mul_pd(*Y_vec, *Y_vec);
-        
-        // count xy[4]
         __m256d XY_vec = _mm256_mul_pd(*X_vec, *Y_vec);
-
-        // count r2[4]
         __m256d R2_vec = _mm256_add_pd(X2_vec, Y2_vec);
 
-        // r2[i]
         unsigned int cmp[4] = {};
         __m256d maxRadius = _mm256_set1_pd(c_maxRadius);
         __m256d CMP_vec = _mm256_cmp_pd(R2_vec, maxRadius, _CMP_LE_OQ);
@@ -141,17 +161,14 @@ void iterateMandelbrot(__m256d* X_vec, __m256d* Y_vec, const __m256d X0_vec, con
 
         if (!mask) break;
 
-        // N[i] += cmp[i];
         __m128i N_vec = _mm_loadu_si128((__m128i*)N);
         __m128i cmp_vec = _mm_loadu_si128((__m128i*)cmp);
         __m128i N_result = _mm_add_epi32(N_vec, cmp_vec);
         _mm_storeu_si128((__m128i*)N, N_result);
 
-        // X[i] = x2[i] - y2[i] + X0[i]
         X2_vec = _mm256_sub_pd(X2_vec, Y2_vec);
         *X_vec = _mm256_add_pd(X2_vec, X0_vec);
 
-        // Y[i] = xy[i] + xy[i] + y0_single
         __m256d temp_vec = _mm256_add_pd(XY_vec, XY_vec);
         *Y_vec = _mm256_add_pd(temp_vec, Y0_vec);
     }
@@ -176,9 +193,13 @@ void setPixels(sf::Image* buffer, size_t x, size_t y, const unsigned int N[4], i
     }
 }
 
-void getEventFromUser(double* zoomX, double* zoomY, double* offsetX, double* offsetY,
-                      sf::RenderWindow* window, bool graphicsEnabled)
+void getEventFromUser(screenData* screen, sf::RenderWindow* window, bool graphicsEnabled)
 {
+    double* offsetX = &(screen->offsetX);
+    double* offsetY = &(screen->offsetY);
+    double* zoomX = &(screen->zoomX);
+    double* zoomY = &(screen->zoomY);
+
     sf::Event event;
     while ((*window).pollEvent(event)) 
     {

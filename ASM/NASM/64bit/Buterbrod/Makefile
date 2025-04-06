@@ -2,11 +2,11 @@
 CXX = g++
 SANITIZER = 
 SFML_AND_SDL2 = -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system -lSDL2 -lSDL2_mixer
-CXXFLAGS = -I inc -mavx -D _DEBUG -std=c++17 -O2 -Wall -Wextra -Weffc++                 \
-
+CXXFLAGS = -I inc -DON_STAT -mavx -D _DEBUG -std=c++17 -O3 -Wall -Wextra -Weffc++                 \
+# -pg - for getting statistics of every function
 # -Wfloat-equal 
 # Object files
-OBJECTS = obj/buterbrod_spd3trueIntr.o
+OBJECTS = obj/profiler.o obj/buterbrod_spd3trueIntr.o 
 
 # Default target
 all: init out

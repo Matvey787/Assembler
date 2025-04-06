@@ -17,8 +17,24 @@ intrinsics library `<immintrin.h>`.
 ## Speed
 
 Distribution: `Ubuntu 24.10`
-Linux version: `Linux version 6.11.0`  
-CPU: `Intel Core i5 9300H (2.40 GHz)`  
+Linux version: `Linux version 6.11.0`
+CPU: `Intel Core i5 9300H (2.40 GHz)`
+
+### CPU ticks (compiler & prog version)
+
+Table shows `CPU ticks * 10^6` for each version of the program with different compilators.
+
+| Compiler Flags       | Naive Version | First Version | Vectorized (`no real AVX`, `4×1`) | Vectorized (`no real AVX`, `8×1`) | Vectorized (`real AVX`) |
+|----------------------|---------------|---------------|---------------|---------------|---------------|
+| `g++ -O2`           | 108.08 +- 3.13 | 70.60 +- 5.23 | 54.28 +- 7.75 | 50.76 +- 6.78 | 46.35 +- 3.94 |
+| `g++ -O3`           | 107.59 +- 2.11 | 61.88 +- 8.63 | 59.10 +- 6.63 | 72.31 +- 6.81 | 47.58 +- 5.39 |
+| `clang++ -O2`       | 109.76 +- 2.77 | 55.12 +- 6.43 | 45.07 +- 3.15 | 33.35 +- 2.89 | 45.88 +- 4.16 |
+| `clang++ -O3`       | 111.23 +- 2.69 | 54.34 +- 5.75 | 47.05 +- 3.47 | 32.94 +- 3.38 | 45.49 +- 4.63 |
+
+![Diagram](imgs/cpuTicksDiagram.svg)
+
+### FPS (compiler & prog version)
+
 > [!NOTE]
 > The speed of the program is measured in fps (frames per second).
 
@@ -37,20 +53,79 @@ CPU: `Ryzen 9 5900H (4.60 GHz)`
 
 | Compiler Flags       | Naive Version | First Version | Vectorized (`no real AVX`, `4×1`) | Vectorized (`no real AVX`, `7×1`) | Vectorized (`real AVX`) |
 |----------------------|---------------|---------------|----------------------------------|----------------------------------|------------------------|
-| `g++ -O2`           | 35         | 52-53            |  84-86                        | 26                                | 86-87                  |
-| `g++ -O3`           | 35            | 75        | 61-62                             | 57-58                         | 89-90                  |
-| `clang++ -O2`       | 33-34         | 79-80            | 88-89                      | 106-107                            | 93                  |
+| `g++ -O2`           | 35         | 52-53            |  84-86                        | 26                                 | 86-87                  |
+| `g++ -O3`           | 35            | 75        | 61-62                             | 57-58                              | 89-90                  |
+| `clang++ -O2`       | 33-34         | 79-80            | 88-89                      | 106-107                            | 93                     |
 | `clang++ -O3`       | 34            | 79-80            | 88-89                      | 107                                | 91                     |
 
 > [!NOTE]
 > The speed of the program is measured in fps (frames per second).
 
-## AVX functions used in the project
+## 
+
+Сpu ticks were measured using a simple profiler written by me to quickly calculate cpu ticks and the random error of the measured value as of the variance of the deviation.
+
+The formula for the variance of deviation:
+
+![Formula](imgs/deviation.png)
+
+You can enable the profiler by using the -DON_STAT flag, and inserting a piece of code into your file:
+
+```cpp
+#ifdef ON_STAT
+    #include "profiler.h"
+    #define PROFILE_START_(name) profileStart(name);
+    #define PROFILE_END_(name) profileEnd(name);
+    #define PROFILE_SET_LIMIT_(limit) setProfileLimit(limit);
+    #define PROFILE_INFO_ printStats();
+#else
+    #define PROFILE_START_(name)
+    #define PROFILE_END_(name)
+    #define PROFILE_SET_LIMIT_(limit)
+    #define PROFILE_INFO_
+#endif
+```
+
+In such a case, you can adjust the number of measurements of a piece of code like this:
+
+```cpp
+PROFILE_SET_LIMIT_(1000)
+```
+
+That would set a measurement limit of 1,000 pieces.  
+To measure a piece of code you have to wrap it in the following:
+
+```cpp
+PROFILE_START_("funcName")
+// function code
+PROFILE_END_("funcName")
+```
+
+And the output of the statistics:
+
+```cpp
+PROFILE_INFO_
+```
+
+After that, you will see the following:
+
+![progressBar](imgs/progressBar.gif)
+
+## AVX acceleration
+
+AVX (Advanced Vector Extensions) is a set of instructions for x86/x86-64 processors that enables parallel computations on multiple data points simultaneously (SIMD — Single Instruction, Multiple Data). In this program, AVX is utilized to accelerate Mandelbrot set calculations by processing 4 `double` values in a single operation.
+
+### How it works
+
+We reduce the number of iterations by sweeping cycles in a single iteration. We work with 4 points on the x-axis at once. This reduces the number of iterations from 600*800 = 480000 to 600*200 = 120000, which significantly improves the performance of the program.
+
+![fastInit](imgs/fastInit.svg)
+![cycleSweep](imgs/cycleSweep.svg)
+
+### Intel AVX functions used in the project
 
 > [!Note]
 > You need the `-mavx` flag to make it work.
-
-AVX (Advanced Vector Extensions) is a set of instructions for x86/x86-64 processors that enables parallel computations on multiple data points simultaneously (SIMD — Single Instruction, Multiple Data). In this program, AVX is utilized to accelerate Mandelbrot set calculations by processing 4 `double` values in a single operation.
 
 The table below lists the main AVX functions employed in the code:
 
