@@ -87,7 +87,11 @@ void profileEnd(const char* name)
         {
             data->dataTicks[testIndex] = endTicks - data->startTicks;
             data->callCount++;
-        } 
+        }
+        else
+        {
+            printf("ready!\n");
+        }
     }
 }
 

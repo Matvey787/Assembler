@@ -2,7 +2,7 @@
 CXX = g++
 SANITIZER = 
 SFML_AND_SDL2 = -lsfml-graphics -lsfml-audio -lsfml-window -lsfml-system -lSDL2 -lSDL2_mixer
-CXXFLAGS = -I inc -DON_STAT -DTRUEAVX256 -mavx -D _DEBUG -std=c++17 -O3 -Wall -Wextra -Weffc++  \
+CXXFLAGS = -I inc -DON_STAT -DNAIVE_V -mavx -D _DEBUG -std=c++17 -O2 -Wall -Wextra -Weffc++  \
 
 # -DNAIVE_V
 # -DSPD1_V

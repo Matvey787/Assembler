@@ -39,16 +39,16 @@
     for (size_t x = 0; x < C_SCREEN_WIDTH; x++) {                                   \
         for (size_t y = 0; y < C_SCREEN_HEIGHT; y++)                                \
         {                                                                           \
-            double x0 = (x / (double)C_SCREEN_WIDTH) * zoomX + offsetX;             \
-            double y0 = (y / (double)C_SCREEN_HEIGHT) * zoomY - offsetY;            \
-            double x_new = 0, y_new = 0;                                            \
+            volatile double x0 = (x / (double)C_SCREEN_WIDTH) * zoomX + offsetX;             \
+            volatile double y0 = (y / (double)C_SCREEN_HEIGHT) * zoomY - offsetY;            \
+            volatile double x_new = 0, y_new = 0;                                            \
             int iteration = 0;                                                      \
             const int max_iteration = 100;                                          \
             while (x_new * x_new + y_new * y_new <= 4 && iteration < max_iteration) \
             {                                                                       \
-                double xtemp = x_new * x_new - y_new * y_new + x0;                  \
-                y_new = 2 * x_new * y_new + y0;                                     \
-                x_new = xtemp;                                                      \
+                volatile double xtemp = x_new * x_new - y_new * y_new + x0;                  \
+                volatile double y_new = 2 * x_new * y_new + y0;                     \
+                volatile double x_new = xtemp;                                      \
                 iteration++;                                                        \
             }                                                                       \
             ON_BUFF_                                                                \
@@ -79,13 +79,13 @@
             const double x0_single = (double)x * k_x + offsetX;                   \
             const double y0_single = (double)y * k_y - offsetY;                   \
             const int max_iteration = 100;                                        \
-            double X0[4] = {x0_single,                                            \
+            volatile double X0[4] = {x0_single,                                            \
                             x0_single + k_x,                                      \
                             x0_single + 2 * k_x,                                  \
                             x0_single + 3 * k_x};                                 \
-            double X[4] = {X0[0], X0[1], X0[2], X0[3]};                           \
-            double Y[4] = {y0_single, y0_single, y0_single, y0_single};           \
-            unsigned int N[4] = {0, 0, 0, 0};                                     \
+            volatile double X[4] = {X0[0], X0[1], X0[2], X0[3]};                           \
+            volatile double Y[4] = {y0_single, y0_single, y0_single, y0_single};           \
+            volatile unsigned int N[4] = {0, 0, 0, 0};                                     \
             for (unsigned int n = 0; n < max_iteration; n++)                      \
             {                                                                     \
                 bool is_out = true;                                               \
@@ -141,21 +141,21 @@
                                                                                         \
             const int max_iteration = 100;                                              \
                                                                                         \
-            double X0[4] = {x0_single,                                                  \
+            volatile double X0[4] = {x0_single,                                                  \
                             x0_single + 1 * k_x,                                        \
                             x0_single + 2 * k_x,                                        \
                             x0_single + 3 * k_x};                                       \
                                                                                         \
-            double X[4] = {}; for (int i = 0; i < 4; i++) X[i] = X0[i];                 \
-            double Y[4] = {}; for (int i = 0; i < 4; i++) Y[i] = y0_single;             \
+            volatile double X[4] = {}; for (int i = 0; i < 4; i++) X[i] = X0[i];                 \
+            volatile double Y[4] = {}; for (int i = 0; i < 4; i++) Y[i] = y0_single;             \
                                                                                         \
             unsigned int N[4] = {0, 0, 0, 0};                                           \
             for (unsigned int n = 0; n < max_iteration; n++)                            \
             {                                                                           \
-                double x2[4] = {}; for (int i = 0; i < 4; i++) x2[i] = X[i] * X[i];     \
-                double y2[4] = {}; for (int i = 0; i < 4; i++) y2[i] = Y[i] * Y[i];     \
-                double xy[4] = {}; for (int i = 0; i < 4; i++) xy[i] = X[i] * Y[i];     \
-                double r2[4] = {}; for (int i = 0; i < 4; i++) r2[i] = x2[i] + y2[i];   \
+                volatile double x2[4] = {}; for (int i = 0; i < 4; i++) x2[i] = X[i] * X[i];     \
+                volatile double y2[4] = {}; for (int i = 0; i < 4; i++) y2[i] = Y[i] * Y[i];     \
+                volatile double xy[4] = {}; for (int i = 0; i < 4; i++) xy[i] = X[i] * Y[i];     \
+                volatile double r2[4] = {}; for (int i = 0; i < 4; i++) r2[i] = x2[i] + y2[i];   \
                                                                                         \
                 unsigned int cmp[4] = {};                                               \
                 for (int i = 0; i < 4; i++) cmp[i] = (r2[i] <= 4);                      \
@@ -210,7 +210,7 @@
                                                                                         \
             const int max_iteration = 100;                                              \
                                                                                         \
-            double X0[8] = {x0_single,                                                  \
+            volatile double X0[8] = {x0_single,                                                  \
                             x0_single + 1 * k_x,                                        \
                             x0_single + 2 * k_x,                                        \
                             x0_single + 3 * k_x,                                        \
@@ -220,16 +220,16 @@
                             x0_single + 7 * k_x                                         \
                         };                                                              \
                                                                                         \
-            double X[8] = {}; for (int i = 0; i < 8; i++) X[i] = X0[i];                 \
-            double Y[8] = {}; for (int i = 0; i < 8; i++) Y[i] = y0_single;             \
+            volatile double X[8] = {}; for (int i = 0; i < 8; i++) X[i] = X0[i];                 \
+            volatile double Y[8] = {}; for (int i = 0; i < 8; i++) Y[i] = y0_single;             \
                                                                                         \
             unsigned int N[8] = {0, 0, 0, 0, 0, 0, 0};                                  \
             for (unsigned int n = 0; n < max_iteration; n++)                            \
             {                                                                           \
-                double x2[8] = {}; for (int i = 0; i < 8; i++) x2[i] = X[i] * X[i];     \
-                double y2[8] = {}; for (int i = 0; i < 8; i++) y2[i] = Y[i] * Y[i];     \
-                double xy[8] = {}; for (int i = 0; i < 8; i++) xy[i] = X[i] * Y[i];     \
-                double r2[8] = {}; for (int i = 0; i < 8; i++) r2[i] = x2[i] + y2[i];   \
+                volatile double x2[8] = {}; for (int i = 0; i < 8; i++) x2[i] = X[i] * X[i];     \
+                volatile double y2[8] = {}; for (int i = 0; i < 8; i++) y2[i] = Y[i] * Y[i];     \
+                volatile double xy[8] = {}; for (int i = 0; i < 8; i++) xy[i] = X[i] * Y[i];     \
+                volatile double r2[8] = {}; for (int i = 0; i < 8; i++) r2[i] = x2[i] + y2[i];   \
                                                                                         \
                 unsigned int cmp[8] = {};                                               \
                 for (int i = 0; i < 8; i++) cmp[i] = (r2[i] <= 4);                      \
@@ -283,7 +283,7 @@
             double y0_single = (double)y * k_y - offsetY;                         \
                                                                                   \
             double X0[4];                                                         \
-            __m256d X_vec, Y_vec;                                                 \
+            volatile __m256d X_vec, Y_vec;                                                 \
             X0[0] = x0_single;                                                    \
             X0[1] = x0_single + 1 * k_x;                                          \
             X0[2] = x0_single + 2 * k_x;                                          \
@@ -291,19 +291,19 @@
             X_vec = _mm256_loadu_pd(X0);                                          \
             Y_vec = _mm256_set1_pd(y0_single);                                    \
                                                                                   \
-            unsigned int N[4] = {0, 0, 0, 0};                                     \
+            volatile unsigned int N[4] = {0, 0, 0, 0};                                     \
             const int max_iteration = 100;                                        \
             double c_maxRadius = 4.0;                                             \
-            __m256d X0_vec = _mm256_loadu_pd(X0);                                 \
-            __m256d Y0_vec = Y_vec;                                               \
+            volatile __m256d X0_vec = _mm256_loadu_pd(X0);                                 \
+            volatile __m256d Y0_vec = Y_vec;                                               \
             for (unsigned int n = 0; n < max_iteration; n++)                      \
             {                                                                     \
-                __m256d X2_vec = _mm256_mul_pd(X_vec, X_vec);                     \
-                __m256d Y2_vec = _mm256_mul_pd(Y_vec, Y_vec);                     \
-                __m256d XY_vec = _mm256_mul_pd(X_vec, Y_vec);                     \
-                __m256d R2_vec = _mm256_add_pd(X2_vec, Y2_vec);                   \
+                volatile __m256d X2_vec = _mm256_mul_pd(X_vec, X_vec);                     \
+                volatile __m256d Y2_vec = _mm256_mul_pd(Y_vec, Y_vec);                     \
+                volatile __m256d XY_vec = _mm256_mul_pd(X_vec, Y_vec);                     \
+                volatile __m256d R2_vec = _mm256_add_pd(X2_vec, Y2_vec);                   \
                                                                                   \
-                unsigned int cmp[4] = {};                                         \
+                volatile unsigned int cmp[4] = {};                                         \
                 __m256d maxRadius = _mm256_set1_pd(c_maxRadius);                  \
                 __m256d CMP_vec = _mm256_cmp_pd(R2_vec, maxRadius, _CMP_LE_OQ);   \
                 int mask = _mm256_movemask_pd(CMP_vec);                           \
@@ -363,7 +363,7 @@
 
 int main()
 {
-    PROFILE_SET_LIMIT_(30000)
+    PROFILE_SET_LIMIT_(200)
     sf::RenderWindow window(sf::VideoMode(C_SCREEN_WIDTH, C_SCREEN_HEIGHT), "Mandelbrot");
 
     CREATE_BUFFER_
