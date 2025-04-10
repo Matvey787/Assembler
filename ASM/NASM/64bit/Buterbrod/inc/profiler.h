@@ -4,7 +4,7 @@
 #include <stdio.h>
 
 const size_t c_maxProfiles = 100;
-const size_t c_dataLength = 10000;
+const size_t c_dataLength = 100000;
 struct ProfileData
 {
     char name[64];

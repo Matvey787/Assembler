@@ -9,7 +9,11 @@
         "variant": "cpp",
         "*.tcc": "cpp",
         "fstream": "cpp",
-        "cstdlib": "cpp"
+        "cstdlib": "cpp",
+        "cmath": "cpp",
+        "chrono": "cpp",
+        "text_encoding": "cpp",
+        "typeinfo": "cpp"
     },
     "Codegeex.CommitMessage.LanguagePreference": "English",
     "Codegeex.Chat.LanguagePreference": "English"

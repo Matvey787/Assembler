@@ -6,6 +6,12 @@
 #include "profiler.h"
 #include "colors.h"
 
+#ifdef ONPROGBAR
+    #define PROGBAR_(...) __VA_ARGS__
+#endif
+#ifndef ONPROGBAR
+    #define PROGBAR_(...)
+#endif
 size_t profileCount = 0;
 size_t dataTicksLimit = c_dataLength;
 
@@ -44,7 +50,7 @@ void setProfileLimit(size_t limitOfCalls)
 {
     if (limitOfCalls > c_dataLength)
     {
-        printf("%s Warning: the number of calls is too high, it will be cut to a limit of 10000%s\n", BRIGHT_MAGENTA_, EXITCOLOR_);
+        printf("%s Warning: the number of calls is too high, it will be cut to a limit of 100000%s\n", BRIGHT_MAGENTA_, EXITCOLOR_);
         fflush(stdout);
         dataTicksLimit = c_dataLength;
     }
@@ -62,7 +68,7 @@ void profileStart(const char* name)
     ProfileData* data = getProfile(name);
     if (data)
     {
-        progressBar(data->callCount);
+        PROGBAR_(progressBar(data->callCount);)
         if (data->callCount < dataTicksLimit)
         {
             data->startTicks = __rdtsc();
@@ -111,11 +117,11 @@ void printStats()
             dispersion += ((profiles[profIndex].dataTicks[j] - ticksAverage) * 
                            (profiles[profIndex].dataTicks[j] - ticksAverage));
         }
-        --numOfTests;
-        dispersion /= numOfTests;
-        dispersion = sqrt(dispersion);
+        //--numOfTests;
+        long double doubleD = sqrt(dispersion / numOfTests);
+        
         printf("%s Ticks average between start/end: %s %llu +- %llu\n", GREEN_, EXITCOLOR_,  
-                                                                        ticksAverage, dispersion);
+                                                        ticksAverage, (unsigned long long)doubleD);
         printf("%s Calls: %s %lu\n", GREEN_, EXITCOLOR_, profiles[profIndex].callCount);
     }
 }

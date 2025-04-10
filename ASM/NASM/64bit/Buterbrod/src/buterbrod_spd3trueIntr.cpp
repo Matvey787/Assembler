@@ -32,13 +32,6 @@ inline void mm_add_epi32(unsigned int mm[4], const unsigned int mm2[4])
 
 void getEventFromUser(screenData* screen, sf::RenderWindow* window, bool graphicsEnabled);
 
-void initCoordinates(double X0[4], __m256d* X_vec, __m256d* Y_vec, double x0_single, double y0_single, double k_x);
-
-void iterateMandelbrot(__m256d* X_vec, __m256d* Y_vec, const __m256d X0_vec, const __m256d Y0_vec,
-                       unsigned int N[4], unsigned int max_iteration, double c_maxRadius);
-
-void setPixels(sf::Image* buffer, size_t x, size_t y, const unsigned int N[4], int max_iteration);
-
 void countPixels(screenData* screen, sf::Image* buffer);
 
 int main(int argc, char* argv[])
@@ -116,81 +109,71 @@ void countPixels(screenData* screen, sf::Image* buffer)
             double x0_single = (double)x * k_x + offsetX;
             double y0_single = (double)y * k_y + offsetY;
 
+            // Вставка содержимого initCoordinates
             double X0[4];
             __m256d X_vec, Y_vec;
-            initCoordinates(X0, &X_vec, &Y_vec, x0_single, y0_single, k_x);
+            X0[0] = x0_single;
+            X0[1] = x0_single + 1 * k_x;
+            X0[2] = x0_single + 2 * k_x;
+            X0[3] = x0_single + 3 * k_x;
+            X_vec = _mm256_loadu_pd(X0);
+            Y_vec = _mm256_set1_pd(y0_single);
 
             unsigned int N[4] = {0, 0, 0, 0};
-            iterateMandelbrot(&X_vec, &Y_vec, _mm256_loadu_pd(X0), Y_vec, N, max_iteration, c_maxRadius);
+            // Вставка содержимого iterateMandelbrot
+            const int max_iteration = 100; // Предполагаем значение, так как оно не передавалось явно
+            double c_maxRadius = 4.0;      // Предполагаем значение (обычно 4 для Мандельброта)
+            __m256d X0_vec = _mm256_loadu_pd(X0); // Сохраняем начальные координаты
+            __m256d Y0_vec = Y_vec;               // Сохраняем начальные Y
+            for (unsigned int n = 0; n < max_iteration; n++) 
+            {
+                __m256d X2_vec = _mm256_mul_pd(X_vec, X_vec);
+                __m256d Y2_vec = _mm256_mul_pd(Y_vec, Y_vec);
+                __m256d XY_vec = _mm256_mul_pd(X_vec, Y_vec);
+                __m256d R2_vec = _mm256_add_pd(X2_vec, Y2_vec);
 
-            setPixels(buffer, x, y, N, max_iteration);
+                unsigned int cmp[4] = {};
+                __m256d maxRadius = _mm256_set1_pd(c_maxRadius);
+                __m256d CMP_vec = _mm256_cmp_pd(R2_vec, maxRadius, _CMP_LE_OQ);
+                int mask = _mm256_movemask_pd(CMP_vec);
+                cmp[0] = (mask & 1);
+                cmp[1] = (mask & 2) >> 1;
+                cmp[2] = (mask & 4) >> 2;
+                cmp[3] = (mask & 8) >> 3;
+
+                if (!mask) break;
+
+                __m128i N_vec = _mm_loadu_si128((__m128i*)N);
+                __m128i cmp_vec = _mm_loadu_si128((__m128i*)cmp);
+                __m128i N_result = _mm_add_epi32(N_vec, cmp_vec);
+                _mm_storeu_si128((__m128i*)N, N_result);
+
+                X2_vec = _mm256_sub_pd(X2_vec, Y2_vec);
+                X_vec = _mm256_add_pd(X2_vec, X0_vec);
+
+                __m256d temp_vec = _mm256_add_pd(XY_vec, XY_vec);
+                Y_vec = _mm256_add_pd(temp_vec, Y0_vec);
+            }
+
+            // Вставка содержимого setPixels
+            for (int i = 0; i < 4; i++)
+            {
+                int iteration = N[i];
+                if (iteration == max_iteration)
+                {
+                    buffer->setPixel(x + i, y, sf::Color::Black);
+                } else 
+                {
+                    float t = (float)iteration / max_iteration;
+                    unsigned char r = (unsigned char)(255 * (1.0f) * t * 4);
+                    unsigned char g = (unsigned char)(255 * sqrt(t * M_PI));
+                    unsigned char b = (unsigned char)(100 * (1.0f - t * t));
+                    buffer->setPixel(x + i, y, sf::Color(r, g, b));
+                }
+            }
         }
     }
     PROFILE_END_("cntPxls")
-}
-
-void initCoordinates(double X0[4], __m256d* X_vec, __m256d* Y_vec, double x0_single, double y0_single, double k_x)
-{
-    X0[0] = x0_single;
-    X0[1] = x0_single + 1 * k_x;
-    X0[2] = x0_single + 2 * k_x;
-    X0[3] = x0_single + 3 * k_x;
-
-    *X_vec = _mm256_loadu_pd(X0);
-    *Y_vec = _mm256_set1_pd(y0_single);
-}
-
-void iterateMandelbrot(__m256d* X_vec, __m256d* Y_vec, const __m256d X0_vec, const __m256d Y0_vec,
-                       unsigned int N[4], unsigned int max_iteration, double c_maxRadius)
-{
-    for (unsigned int n = 0; n < max_iteration; n++) 
-    {
-        __m256d X2_vec = _mm256_mul_pd(*X_vec, *X_vec);
-        __m256d Y2_vec = _mm256_mul_pd(*Y_vec, *Y_vec);
-        __m256d XY_vec = _mm256_mul_pd(*X_vec, *Y_vec);
-        __m256d R2_vec = _mm256_add_pd(X2_vec, Y2_vec);
-
-        unsigned int cmp[4] = {};
-        __m256d maxRadius = _mm256_set1_pd(c_maxRadius);
-        __m256d CMP_vec = _mm256_cmp_pd(R2_vec, maxRadius, _CMP_LE_OQ);
-        int mask = _mm256_movemask_pd(CMP_vec);
-        cmp[0] = (mask & 1);
-        cmp[1] = (mask & 2) >> 1;
-        cmp[2] = (mask & 4) >> 2;
-        cmp[3] = (mask & 8) >> 3;
-
-        if (!mask) break;
-
-        __m128i N_vec = _mm_loadu_si128((__m128i*)N);
-        __m128i cmp_vec = _mm_loadu_si128((__m128i*)cmp);
-        __m128i N_result = _mm_add_epi32(N_vec, cmp_vec);
-        _mm_storeu_si128((__m128i*)N, N_result);
-
-        X2_vec = _mm256_sub_pd(X2_vec, Y2_vec);
-        *X_vec = _mm256_add_pd(X2_vec, X0_vec);
-
-        __m256d temp_vec = _mm256_add_pd(XY_vec, XY_vec);
-        *Y_vec = _mm256_add_pd(temp_vec, Y0_vec);
-    }
-}
-
-void setPixels(sf::Image* buffer, size_t x, size_t y, const unsigned int N[4], int max_iteration)
-{
-    for (int i = 0; i < 4; i++)
-    {
-        int iteration = N[i];
-        if (iteration == max_iteration)
-        {
-            buffer->setPixel(x + i, y, sf::Color::Black);
-        } else 
-        {
-            float t = (float)iteration / max_iteration;
-            unsigned char r = (unsigned char)(255 * (1.0f) * t * 4);
-            unsigned char g = (unsigned char)(255 * sqrt(t * M_PI));
-            unsigned char b = (unsigned char)(100 * (1.0f - t * t));
-            buffer->setPixel(x + i, y, sf::Color(r, g, b));
-        }
-    }
 }
 
 void getEventFromUser(screenData* screen, sf::RenderWindow* window, bool graphicsEnabled)
