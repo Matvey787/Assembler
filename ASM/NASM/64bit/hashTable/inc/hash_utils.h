@@ -1,7 +1,7 @@
 #ifndef HASH_UTILS_H
 #define HASH_UTILS_H
 
-const size_t c_tableSize =  773;
+const size_t c_tableSize =  750;
 const size_t c_maxWordLen = 100;
 
 typedef struct Node {

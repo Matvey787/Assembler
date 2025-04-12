@@ -83,6 +83,9 @@ void insertHT(HashTable* table, const unsigned char* word)
 
 int searchHT(HashTable* table, const unsigned char* word)
 {
+    assert(table);
+    assert(word);
+    
     size_t index = hashFunction(word);
     Node* current = table->buckets[index].head;
     while (current != NULL) 

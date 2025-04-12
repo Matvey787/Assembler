@@ -42,7 +42,6 @@ void cleanText(const char* inputFile, const char* outputFile)
             fputc('\0', out);
             f_prChar = 0;
         }
-            
     }
     fputc('\0', out);
     fclose(in);
@@ -128,3 +127,24 @@ void parseText(const char* file, HashTable* table)
 
     //return NO_ERR;
 }
+
+// void generateKeys(const char* textFile, const ch)
+// {
+//     int fileDescriptor = open(file, O_RDWR);
+//     if (fileDescriptor == -1) 
+//     {
+//         printf("Failed to open file: %s\n", file);
+//         return;
+//     }
+
+//     // get file info
+//     struct stat file_info = {0};
+//     if (fstat(fileDescriptor, &file_info) == -1) 
+//     {
+//         close(fileDescriptor);
+//         printf("Failed to get file info: %s\n", file);
+//         return;
+//     }
+
+//     return 
+// }
