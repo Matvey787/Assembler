@@ -3,6 +3,7 @@
 #include <string.h>
 #include <assert.h>
 #include <immintrin.h>
+#include <stdint.h>
 
 #include "hash_utils.h"
 
@@ -107,19 +108,24 @@ int searchHT(HashTable* table, const unsigned char* word) {
     Node* current = table->buckets[index].head;
 
     __m256i word_vec = _mm256_loadu_si256((const __m256i*)word);
+    uint32_t word_first_4 = *(const uint32_t*)word;
 
     while (current != NULL) 
     {
         
-        __m256i current_vec = _mm256_loadu_si256((const __m256i*)current->word);
-        
-        __m256i cmp_result = _mm256_cmpeq_epi8(word_vec, current_vec);
-        
-        int mask = _mm256_movemask_epi8(cmp_result);
+        uint32_t current_first_4 = *(const uint32_t*)current->word;
+        if (word_first_4 == current_first_4) 
+        {
+            __m256i current_vec = _mm256_loadu_si256((const __m256i*)current->word);
+            
+            __m256i cmp_result = _mm256_cmpeq_epi8(word_vec, current_vec);
+            
+            int mask = _mm256_movemask_epi8(cmp_result);
 
-        
-        if (mask == 0xFFFFFFFF) {
-            return 1;
+            
+            if (mask == 0xFFFFFFFF) {
+                return 1;
+            }
         }
 
         current = current->next;
