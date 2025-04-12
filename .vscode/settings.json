@@ -13,7 +13,8 @@
         "cmath": "cpp",
         "chrono": "cpp",
         "text_encoding": "cpp",
-        "typeinfo": "cpp"
+        "typeinfo": "cpp",
+        "cstdint": "cpp"
     },
     "Codegeex.CommitMessage.LanguagePreference": "English",
     "Codegeex.Chat.LanguagePreference": "English"
