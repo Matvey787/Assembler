@@ -108,12 +108,15 @@ int searchHT(HashTable* table, const unsigned char* word) {
     Node* current = table->buckets[index].head;
 
     __m256i word_vec = _mm256_loadu_si256((const __m256i*)word);
-    uint32_t word_first_4 = *(const uint32_t*)word;
+    
+    uint32_t word_first_4 = 0;
+    uint32_t current_first_4 = 0;
+
+    memcpy(&word_first_4, word, sizeof(uint32_t));
 
     while (current != NULL) 
     {
-        
-        uint32_t current_first_4 = *(const uint32_t*)current->word;
+        memcpy(&current_first_4, current->word, sizeof(uint32_t));
         if (word_first_4 == current_first_4) 
         {
             __m256i current_vec = _mm256_loadu_si256((const __m256i*)current->word);
